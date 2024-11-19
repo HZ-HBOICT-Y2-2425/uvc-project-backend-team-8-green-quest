@@ -1,0 +1,157 @@
+{
+    "shop": {
+      "sections": {
+        "trees": [
+          {
+            "id": 1,
+            "name": "Oak Tree",
+            "price": 5,
+            "level_required": 1,
+            "path": "/static/treeAssets/tree1.png"
+          },
+          {
+            "id": 2,
+            "name": "Pine Tree",
+            "price": 6,
+            "level_required": 2,
+            "path": "/static/treeAssets/tree2.png"
+          },
+          {
+            "id": 3,
+            "name": "Birch Tree",
+            "price": 4,
+            "level_required": 3,
+            "path": "/static/treeAssets/tree3.png"
+          },
+          {
+            "id": 4,
+            "name": "Cherry Blossom Tree",
+            "price": 5,
+            "level_required": 4,
+            "path": "/static/treeAssets/tree4.png"
+          }
+        ],
+        "bushes": [
+          {
+            "id": 5,
+            "name": "Blueberry Bush",
+            "price": 3,
+            "level_required": 1,
+            "path": "/static/bushAssets/bush1.png"
+          },
+          {
+            "id": 6,
+            "name": "Holly Bush",
+            "price": 4,
+            "level_required": 2,
+            "path": "/static/bushAssets/bush2.png"
+          },
+          {
+            "id": 7,
+            "name": "Lavender Bush",
+            "price": 5,
+            "level_required": 3,
+            "path": "/static/bushAssets/bush3.png"
+          },
+          {
+            "id": 8,
+            "name": "Rosehip Bush",
+            "price": 6,
+            "level_required": 4,
+            "path": "/static/bushAssets/bush4.png"
+          }
+        ],
+        "flowers": [
+          {
+            "id": 9,
+            "name": "Hibbiscus",
+            "price": 2,
+            "level_required": 1,
+            "path": "/static/flowerAssets/flower1.png"
+          },
+          {
+            "id": 10,
+            "name": "Peony",
+            "price": 3,
+            "level_required": 2,
+            "path": "/static/flowerAssets/flower2.png"
+          },
+          {
+            "id": 11,
+            "name": "holly Schrubs",
+            "price": 4,
+            "level_required": 3,
+            "path": "/static/flowerAssets/flower3.png"
+          },
+          {
+            "id": 12,
+            "name": "Dahlia",
+            "price": 5,
+            "level_required": 4,
+            "path": "/static/flowerAssets/flower4.png"
+          }
+        ],
+        "animals": [
+          {
+            "id": 13,
+            "name": "Bee",
+            "price": 4,
+            "level_required": 1,
+            "path": "/static/animalsAssets/animal1.png"
+          },
+          {
+            "id": 14,
+            "name": "Snail",
+            "price": 6,
+            "level_required": 3,
+            "path": "/static/animalsAssets/animal2.png"
+          },
+          {
+            "id": 15,
+            "name": "Turtle",
+            "price": 3,
+            "level_required": 2,
+            "path": "/static/animalsAssets/animal3.png"
+          },
+          {
+            "id": 16,
+            "name": "Frog",
+            "price": 5,
+            "level_required": 4,
+            "path": "/static/animalsAssets/animal4.png"
+          }
+        ],
+        "bugs": [
+          {
+            "id": 17,
+            "name": "Dragon fly",
+            "price": 2,
+            "level_required": 1,
+            "path": "/static/bugsAssets/bug1.png"
+          },
+          {
+            "id": 18,
+            "name": "Coackroach",
+            "price": 3,
+            "level_required": 2,
+            "path": "/static/bugsAssets/bug2.png"
+          },
+          {
+            "id": 19,
+            "name": "Fly",
+            "price": 2,
+            "level_required": 1,
+            "path": "/static/bugsAssets/bug3.png"
+          },
+          {
+            "id": 20,
+            "name": "Beetle",
+            "price": 4,
+            "level_required": 3,
+            "path": "/static/bugsAssets/bug4.png"
+          }
+        ]
+      }
+    }
+  }
+  
