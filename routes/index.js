@@ -1,12 +1,12 @@
 import express from 'express';
-import cors from 'cors';
-import { getAllChallenges, getChallengeById } from '../challengesController/challengesController';
+import { getAllChallenges, getChallengeById } from '../challengesController/challengesController.js';  // Import controller methods
 
-//if the route returns hi then the express js is working
-router.get('/', cors(), (req, res) => {
-    res.json('hi');
-  });
+const router = express.Router();
 
-router.get('/challenges', cors(), getAllChallenges);
-// route to get a challenge by id
-router.get('/challenges/:id', cors(), getChallengeById);
+// Route for getting all challenges
+router.get('/challenges', getAllChallenges);
+
+// Route for getting a specific challenge by ID
+router.get('/challenges/:id', getChallengeById);
+
+export default router;

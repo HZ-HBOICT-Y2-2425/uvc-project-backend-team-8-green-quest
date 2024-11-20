@@ -1,40 +1,57 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'fs';  // Use this for async operations like readFile
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const challengesFilePath = path.join(__dirname, 'challenges.json'); 
-async function readChallengesFile() {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const challengesFilePath = path.join(__dirname, '../challenges.json');
+
+export async function readChallengesFile() {
     try {
         const data = await fs.readFile(challengesFilePath, 'utf-8');
         return JSON.parse(data); 
     } catch (error) {
-        throw new Error('Error reading challenges file');
+        console.error('Error reading the challenges file:', error);
+        throw error;
     }
 }
 
 export async function getAllChallenges(req, res) {
     try {
         const challenges = await readChallengesFile();
-        const challengeUrls = challenges.map(challenge => `/challenges/${challenge.id}`);
-        res.status(200).send(challengeUrls);
+        res.status(200).send(challenges);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send({ error: 'Failed to fetch challenges' });
     }
 }
 
+
 export async function getChallengeById(req, res) {
     try {
-        const id = Number(req.params.id)
-        const challenges = await readChallengesFile();
-        const challenge = challenges.find(challenge => challenge.id === id); 
-        if (challenge) {
-            res.status(200).send(challenge); 
+        const id = Number(req.params.id);  // Get the ID from the route parameters
+
+        // Read the challenges data from the file
+        const challengesData = await readChallengesFile();
+        console.log('Raw challenges data:', challengesData);  // Log the raw data
+
+        // Check if the data contains a challenges key and if it's an array
+        if (Array.isArray(challengesData)) {
+            const challenge = challengesData.find(challenge => challenge.id === id);
+
+            if (challenge) {
+                res.status(200).json(challenge);  // If found, return the challenge
+            } else {
+                res.status(404).send({ error: 'Challenge not found' });  // Handle not found case
+            }
         } else {
-            res.status(404).send({ error: 'Challenge not found' }); 
+            res.status(500).send({ error: 'Challenges data is not in the expected format (array)' });
         }
+
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send({ error: 'Failed to fetch challenge' });
+        res.status(500).send({ error: 'Failed to fetch challenge' });  // Return error if something goes wrong
     }
 }
 

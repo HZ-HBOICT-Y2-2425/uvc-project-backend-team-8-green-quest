@@ -1,5 +1,4 @@
-{
-  "challenges": [
+[
     { "id": 1, "title": "Turn Off Lights", "description": "Turn off lights when leaving a room.", "category": "Energy Saving", "difficulty": "Easy", "CO2_reduction_kg": 0.1 },
     { "id": 2, "title": "Bring Your Own Bag", "description": "Use a reusable bag instead of a plastic one when shopping.", "category": "Waste Reduction", "difficulty": "Easy", "CO2_reduction_kg": 0.04 },
     { "id": 3, "title": "Walk or Cycle", "description": "Choose walking or cycling for a short trip instead of using a car.", "category": "Transportation", "difficulty": "Easy", "CO2_reduction_kg": 0.5 },
@@ -111,5 +110,3 @@
     { "id": 109, "title": "Repair Clothes", "description": "Instead of discarding old or damaged clothing, repair it to extend its life and reduce waste.", "category": "Waste Reduction", "difficulty": "Easy", "CO2_reduction_kg": 0.1 },
     { "id": 110, "title": "Share Your Knowledge", "description": "Teach someone else about a simple eco-friendly habit you practice to encourage sustainability.", "category": "Community", "difficulty": "Easy", "CO2_reduction_kg": 0.05 }
   ]
-}
-
