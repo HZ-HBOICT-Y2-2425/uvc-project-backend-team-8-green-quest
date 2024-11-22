@@ -11,7 +11,7 @@ services:
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
 
-  gateway:
+  apigateway:
     container_name: apigateway
     build: ./apigateway
     volumes:
@@ -19,36 +19,37 @@ services:
     networks:
       - msexample
     ports:
-      - "3010:3010" 
+      - "3010:3010"
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
 
   challenges-api:
     container_name: challenges-api
-    build: .  # Build from the main directory where start.js is located
+    build: ./challenges-api
     volumes:
-      - .:/usr/src/app  # Mount the main directory
+      - ./challenges-api:/usr/src/app
     networks:
       - msexample
     ports:
-      - "3000:3000"  # Expose port 3012 for the challenges API
+      - "3012:3012"
     working_dir: /usr/src/app
-    command: bash -c "npm install && node start.js challenges"  # Run challenges part of start.js
+    command: bash -c "npm install && node start.js challenges"
 
   shop-api:
     container_name: shop-api
-    build: .  # Build from the main directory where start.js is located
+    build: ./shop-api
     volumes:
-      - .:/usr/src/app  # Mount the main directory
+      - ./shop-api:/usr/src/app
     networks:
       - msexample
     ports:
-      - "3013:3013"  # Expose port 3013 for the shop API
+      - "3013:3013"
     working_dir: /usr/src/app
-    command: bash -c "npm install && node start.js shop"  # Run shop part of start.js
+    command: bash -c "npm install && node start.js shop"
 
 networks:
   msexample:
     driver: bridge
+
 
 
