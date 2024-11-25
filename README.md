@@ -1,9 +1,26 @@
-# Backend example
+# Green Quest Backend
 
-In this backend example for a project, a folder is created for each micoservice. 
+## Overview
+The **Green Quest Backend** serves as the core infrastructure for the Green Quest application. It is designed to support user management, challenge tracking, CO2 savings, and gamified reward systems. The backend will eventually implement a microservices architecture with a centralized API Gateway.
 
-1. Install docker to your system
-2. Run `docker compose up` and you are good to go
+## Features
+- **User Management**: Create and manage user profiles.
+- **Challenge System**: Deliver personalized daily challenges and track progress.
+- **CO2 Tracking**: Monitor and visualize users' environmental impact.
+- **Rewards System**: Track and update in-app coins for completing challenges.
+- **Future Features**: Leaderboards, social interactions, and notifications.
+
+---
+
+## Getting Started
+
+1. **Install Docker**  
+   Make sure Docker is installed on your system. You can follow the [Docker installation guide here](https://www.docker.com/get-started).
+
+2. **Run the Services**  
+   Use the following command to start all microservices:
+   ```bash
+   docker-compose up
 
 ## Modules
 
@@ -17,9 +34,17 @@ We save credentials to other services in a `variables.env` file. This file is in
 
 You can change the ports of your server via `variables.env`
 
-- Microservice: sample microservice running on port:3011
-- Apigateway: sample API Gateway - running on port:3010
+- Microservice: 
+    - User Service: Running 
+    - Challenge Service: Running 
+    - Coin Service: Running 
+- Apigateway:
+1. **Challenges API**: Manages daily challenges and tracks user progress.
+2. **Shop API**: Handles in-app purchases for virtual garden customization.
+3. **Notification API**: Sends reminders and updates to users.
 
 ## Containers
 
-Check the readme files of each container to understand the setup
+Each microservice and the API Gateway are containerized for ease of deployment. Containers make it easy to isolate services, allowing you to maintain and scale them independently.
+
+
