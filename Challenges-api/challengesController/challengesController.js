@@ -32,11 +32,9 @@ export async function getChallengeById(req, res) {
     try {
         const id = Number(req.params.id);  
 
-        // Read the challenges data from the file
         const challengesData = await readChallengesFile();
         console.log('Raw challenges data:', challengesData);  
 
-        // Check if the data contains a challenges key and if it's an array
         if (Array.isArray(challengesData)) {
             const challenge = challengesData.find(challenge => challenge.id === id);
 
@@ -51,7 +49,7 @@ export async function getChallengeById(req, res) {
 
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send({ error: 'Failed to fetch challenge' });  // Return error if something goes wrong
+        res.status(500).send({ error: 'Failed to fetch challenge' });
     }
 }
 

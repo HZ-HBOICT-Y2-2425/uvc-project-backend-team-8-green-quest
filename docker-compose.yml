@@ -25,9 +25,9 @@ services:
 
   challenges-api:
     container_name: challenges-api
-    build: ./challenges-api
+    build: ./Challenges-api
     volumes:
-      - ./challenges-api:/usr/src/app
+      - ./Challenges-api:/usr/src/app
     networks:
       - msexample
     ports:
