@@ -7,11 +7,10 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 
-app.use(cors());
 app.use(router);
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(3013, () => {
+    console.log('Server is running on http://localhost:3013');
 });
 
 
