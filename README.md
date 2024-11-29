@@ -48,3 +48,4 @@ You can change the ports of your server via `variables.env`
 Each microservice and the API Gateway are containerized for ease of deployment. Containers make it easy to isolate services, allowing you to maintain and scale them independently.
 
 
+## Release 1.0
