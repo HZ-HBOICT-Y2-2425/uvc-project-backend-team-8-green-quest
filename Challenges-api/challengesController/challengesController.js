@@ -1,25 +1,36 @@
-import { promises as fs } from 'fs';  // Use this for async operations like readFile
+import express from 'express';
+import db from '../db.js';
+import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
 
-const challengesFilePath = path.join(__dirname, '../challenges.json');
+const router = express.Router();
 
-export async function readChallengesFile() {
+// Utility to execute SQL files
+async function executeSqlFile(fileName) {
+    const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
+    console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
+
     try {
-        const data = await fs.readFile(challengesFilePath, 'utf-8');
-        return JSON.parse(data); 
+        const sql = await fs.readFile(sqlFilePath, 'utf-8');
+        const queries = sql.split(';').filter(query => query.trim() !== '');
+
+        for (let query of queries) {
+            await db.query(query); 
+        }
+        
+        console.log(`${fileName} executed successfully.`);
     } catch (error) {
-        console.error('Error reading the challenges file:', error);
+        console.error(`Error executing SQL file ${fileName}:`, error);
         throw error;
     }
 }
 
 export async function getAllChallenges(req, res) {
     try {
-        const challenges = await readChallengesFile();
+        const [challenges] = await db.query('SELECT * FROM Challenges');
         res.status(200).send(challenges);
     } catch (error) {
         console.error('Error:', error);
@@ -30,29 +41,47 @@ export async function getAllChallenges(req, res) {
 
 export async function getChallengeById(req, res) {
     try {
-        const id = Number(req.params.id);  
+        const id = Number(req.params.id); 
 
-        // Read the challenges data from the file
-        const challengesData = await readChallengesFile();
-        console.log('Raw challenges data:', challengesData);  
+        const result = await db.query('SELECT * FROM Challenges WHERE challengeId = ?', [id]);
 
-        // Check if the data contains a challenges key and if it's an array
-        if (Array.isArray(challengesData)) {
-            const challenge = challengesData.find(challenge => challenge.id === id);
-
-            if (challenge) {
-                res.status(200).json(challenge);  
-            } else {
-                res.status(404).send({ error: 'Challenge not found' });  
-            }
-        } else {
-            res.status(500).send({ error: 'Challenges data is not in the expected format (array)' });
+        if (result.length === 0) {
+            return res.status(404).send({ error: 'Challenge not found' });
         }
+
+        return res.status(200).json(result[0]);
 
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send({ error: 'Failed to fetch challenge' });  // Return error if something goes wrong
+        res.status(500).send({ error: 'Failed to fetch challenge due to server error' }); 
     }
 }
+
+export async function seedDatabase() {
+    try {
+        await executeSqlFile('seed-challenges.sql');
+        console.log('Database seeded successfully.');
+    } catch (error) {
+        console.error('Error seeding database:', error);
+        throw error;
+    }
+}
+
+async function setupDatabase() {
+    try {
+        console.log('Starting database setup...');
+        
+        await executeSqlFile('database.sql');
+
+        await seedDatabase();
+
+        console.log('Database setup and seeding completed successfully.');
+    } catch (error) {
+        console.error('Error setting up and seeding database:', error);
+    }
+}
+
+// setuo database automatically
+setupDatabase();
 
 
