@@ -2,8 +2,12 @@
 CREATE DATABASE IF NOT EXISTS EcoApp;
 USE EcoApp;
 
+ALTER TABLE Shop DROP FOREIGN KEY Shop_ibfk_1;
+
+DROP TABLE IF EXISTS Items;
+
 -- Table: Users
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     username CHAR(20) NOT NULL,
     co2Saved FLOAT NOT NULL,
@@ -12,15 +16,17 @@ CREATE TABLE Users (
 );
 
 -- Table: Items
-CREATE TABLE Items (
-    itemID INT AUTO_INCREMENT PRIMARY KEY,
-    image CHAR(50) NOT NULL,
-    type CHAR(20) NOT NULL,
-    cost INT NOT NULL
+CREATE TABLE IF NOT EXISTS Items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2),
+    level_required INT,
+    path VARCHAR(255),
+    category VARCHAR(255)
 );
 
 -- Table: Shop (Bridging Table)
-CREATE TABLE Shop (
+CREATE TABLE IF NOT EXISTS Shop (
     shopID INT AUTO_INCREMENT PRIMARY KEY,
     itemID INT NOT NULL,
     userID INT NOT NULL,
@@ -31,7 +37,7 @@ CREATE TABLE Shop (
 );
 
 -- Table: Challenges
-CREATE TABLE Challenges (
+CREATE TABLE IF NOT EXISTS Challenges (
     challengeID INT AUTO_INCREMENT PRIMARY KEY,
     description CHAR(200),
     impact CHAR(100),
@@ -40,7 +46,7 @@ CREATE TABLE Challenges (
 );
 
 -- Table: ChallengeUser (Bridging Table)
-CREATE TABLE ChallengeUser (
+CREATE TABLE IF NOT EXISTS ChallengeUser (
     challengeUserID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     challengeID INT NOT NULL,
@@ -49,7 +55,7 @@ CREATE TABLE ChallengeUser (
 );
 
 -- Table: Friendship (Bridging Table)
-CREATE TABLE Friendship (
+CREATE TABLE IF NOT EXISTS Friendship (
     friendshipID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     user2ID INT NOT NULL,
