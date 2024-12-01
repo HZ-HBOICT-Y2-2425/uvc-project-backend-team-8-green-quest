@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   microservice:
     container_name: microservice
@@ -10,6 +12,14 @@ services:
       - "3011:3011"
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: examplepassword
+      DB_NAME: EcoApp
+      DB_PORT: 3306
+    depends_on:
+      - mysql
 
   apigateway:
     container_name: apigateway
@@ -22,6 +32,14 @@ services:
       - "3010:3010"
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: examplepassword
+      DB_NAME: EcoApp
+      DB_PORT: 3306
+    depends_on:
+      - mysql
 
   challenges-api:
     container_name: challenges-api
@@ -34,6 +52,14 @@ services:
       - "3012:3012"
     working_dir: /usr/src/app
     command: bash -c "npm install && node start.js challenges"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: examplepassword
+      DB_NAME: EcoApp
+      DB_PORT: 3306
+    depends_on:
+      - mysql
 
   shop-api:
     container_name: shop-api
@@ -46,10 +72,35 @@ services:
       - "3013:3013"
     working_dir: /usr/src/app
     command: bash -c "npm install && node start.js shop"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: examplepassword
+      DB_NAME: EcoApp
+      DB_PORT: 3306
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    networks:
+      - msexample
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepassword
+      MYSQL_DATABASE: EcoApp
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 networks:
   msexample:
     driver: bridge
+
+volumes:
+  mysql_data:
+
 
 
 
