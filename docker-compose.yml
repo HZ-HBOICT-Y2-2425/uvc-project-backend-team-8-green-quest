@@ -44,6 +44,7 @@ services:
     build: ./Challenges-api
     volumes:
       - ./Challenges-api:/usr/src/app
+      - ./database:/usr/src/app/database
     networks:
       - msexample
     ports:

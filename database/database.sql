@@ -2,10 +2,6 @@
 CREATE DATABASE IF NOT EXISTS EcoApp;
 USE EcoApp;
 
-ALTER TABLE Shop DROP FOREIGN KEY Shop_ibfk_1;
-
-DROP TABLE IF EXISTS Items;
-
 -- Table: Users
 CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Users (
 
 -- Table: Items
 CREATE TABLE IF NOT EXISTS Items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    itemID INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2),
     level_required INT,
@@ -39,10 +35,11 @@ CREATE TABLE IF NOT EXISTS Shop (
 -- Table: Challenges
 CREATE TABLE IF NOT EXISTS Challenges (
     challengeID INT AUTO_INCREMENT PRIMARY KEY,
-    description CHAR(200),
-    impact CHAR(100),
-    co2 FLOAT NOT NULL,
-    coins INT NOT NULL
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    difficulty VARCHAR(50) NOT NULL,
+    CO2_reduction_kg DECIMAL(5, 2) NOT NULL
 );
 
 -- Table: ChallengeUser (Bridging Table)
