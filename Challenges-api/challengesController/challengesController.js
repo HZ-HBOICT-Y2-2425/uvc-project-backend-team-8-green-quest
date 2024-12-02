@@ -18,9 +18,9 @@ async function executeSqlFile(fileName) {
         const queries = sql.split(';').filter(query => query.trim() !== '');
 
         for (let query of queries) {
-            await db.query(query); 
+            await db.query(query);
         }
-        
+
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -41,7 +41,7 @@ export async function getAllChallenges(req, res) {
 
 export async function getChallengeById(req, res) {
     try {
-        const id = Number(req.params.id); 
+        const id = Number(req.params.id);
 
         const result = await db.query('SELECT * FROM Challenges WHERE challengeId = ?', [id]);
 
@@ -53,7 +53,7 @@ export async function getChallengeById(req, res) {
 
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send({ error: 'Failed to fetch challenge due to server error' }); 
+        res.status(500).send({ error: 'Failed to fetch challenge due to server error' });
     }
 }
 
@@ -70,7 +70,7 @@ export async function seedDatabase() {
 async function setupDatabase() {
     try {
         console.log('Starting database setup...');
-        
+
         await executeSqlFile('database.sql');
 
         await seedDatabase();

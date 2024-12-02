@@ -96,8 +96,7 @@ describe('Challenges API Tests', () => {
 
             expect(fs.readFile).toHaveBeenCalledWith(
                 path.join(__dirname, '../Challenges-api/challenges.json'),
-                'utf-8'
-              );
+                'utf-8');
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith({ id: 1, name: 'Challenge 1' });
         });
