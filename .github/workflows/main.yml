@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker Compose services
+        run: |
+          docker-compose build
+
+      - name: Start services for testing
+        run: |
+          docker-compose up -d
+
+      - name: Run microservice tests
+        run: |
+          docker-compose exec microservice npm test
+
+      - name: Run API gateway tests
+        run: |
+          docker-compose exec apigateway npm test
+
+      - name: Run challenges-api tests
+        run: |
+          docker-compose exec challenges-api npm test
+
+      - name: Run shop-api tests
+        run: |
+          docker-compose exec shop-api npm test
+
+      - name: Tear down services
+        run: |
+          docker-compose down
+
+      # add details for deployment

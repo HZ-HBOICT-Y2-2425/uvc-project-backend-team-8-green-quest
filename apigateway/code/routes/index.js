@@ -6,26 +6,26 @@ const router = express.Router();
 router.use(cors());
 
 const microserviceProxy = createProxyMiddleware({
-  target: 'http://microservice:3011',
-  changeOrigin: true
+    target: 'http://microservice:3011',
+    changeOrigin: true
 });
 
 router.use('/microservice', microserviceProxy);
 
 const challengesProxy = createProxyMiddleware({
-  target: 'http://challenges-api:3012',
-  changeOrigin: true,
+    target: 'http://challenges-api:3012',
+    changeOrigin: true,
 });
 
 router.use('/challenges', challengesProxy);
 
 router.get('/health', (req, res) => {
-  res.send('API Gateway is running!');
+    res.send('API Gateway is running!');
 });
 
 const itemsProxy = createProxyMiddleware({
-  target: 'http://shop-api:3013',
-  changeOrigin: true,
+    target: 'http://shop-api:3013',
+    changeOrigin: true,
 });
 
 router.use('/items', itemsProxy);
