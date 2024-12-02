@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { readChallengesFile, getAllItems  } from '../shop-api/controller/itemController.js';
+import { readChallengesFile, getAllItems } from '../shop-api/controller/itemController.js';
 
 vi.mock('fs', () => ({
     promises: {
@@ -33,45 +33,46 @@ describe('Shop API tests', () => {
     });
 
     describe('return all of the items in the shop', () => {
-       it('should return all of the items in the shop', async () => {
-           const mockItems = ([{id:1, name: 'Item 1'},
-                                                  {id:2, name: 'Item 2'},
-                                                  {id:3, name: 'Item 3'}
-           ]);
+        it('should return all of the items in the shop', async () => {
+            const mockItems = ([
+                { id: 1, name: 'Item 1' },
+                { id: 2, name: 'Item 2' },
+                { id: 3, name: 'Item 3' }
+            ]);
 
-           fs.readFile.mockResolvedValueOnce(JSON.stringify(mockItems));
+            fs.readFile.mockResolvedValueOnce(JSON.stringify(mockItems));
 
-           const req = {};
-           const res = {
+            const req = {};
+            const res = {
                 status: vi.fn().mockReturnThis(),
                 send: vi.fn(),
-           };
+            };
 
-           await getAllItems(req, res);
+            await getAllItems(req, res);
 
-           expect(fs.readFile).toHaveBeenCalledWith(
-            path.join(__dirname, '../shop-api/shop.json'), 'utf-8'
-           );
-           expect(res.status).toHaveBeenCalledWith(200);
-           expect(res.send).toHaveBeenCalledWith(mockItems);
-       });
+            expect(fs.readFile).toHaveBeenCalledWith(
+                path.join(__dirname, '../shop-api/shop.json'), 'utf-8'
+            );
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(mockItems);
+        });
 
-       it('should return 500 error if it can not fetch data', async () => {
+        it('should return 500 error if it can not fetch data', async () => {
             const error = new Error('Fetching error');
 
             fs.readFile.mockRejectedValueOnce(error);
 
-           const req = {};
-           const res = {
+            const req = {};
+            const res = {
                 status: vi.fn().mockReturnThis(),
                 send: vi.fn(),
-           };
+            };
 
-           await getAllItems(req, res);
+            await getAllItems(req, res);
 
-           expect(res.status).toHaveBeenCalledWith(500);
-           expect(res.send).toHaveBeenCalledWith({ error: 'Failed to fetch challenges' });
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith({ error: 'Failed to fetch challenges' });
 
-       })
+        })
     });
 });
