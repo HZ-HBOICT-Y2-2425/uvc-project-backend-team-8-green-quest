@@ -39,7 +39,9 @@ CREATE TABLE IF NOT EXISTS Challenges (
     description TEXT NOT NULL,
     category VARCHAR(255) NOT NULL,
     difficulty VARCHAR(50) NOT NULL,
-    CO2_reduction_kg DECIMAL(5, 2) NOT NULL
+    CO2_reduction_kg DECIMAL(5, 2) NOT NULL,
+    coins INT NOT NULL,
+    impact TEXT NOT NULL
 );
 
 -- Table: ChallengeUser (Bridging Table)
