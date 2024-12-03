@@ -51,22 +51,22 @@ jobs:
       # Step 9: Run microservice tests
       - name: Run microservice tests
         run: |
-          docker-compose exec microservice npm test
+          docker-compose exec -T microservice npm test
 
       # Step 10: Run API gateway tests
       - name: Run API gateway tests
         run: |
-          docker-compose exec apigateway npm test
+          docker-compose exec -T apigateway npm test
 
       # Step 11: Run challenges-api tests
       - name: Run challenges-api tests
         run: |
-          docker-compose exec challenges-api npm test
+          docker-compose exec -T challenges-api npm test
 
       # Step 12: Run shop-api tests
       - name: Run shop-api tests
         run: |
-          docker-compose exec shop-api npm test
+          docker-compose exec -T shop-api npm test
 
       # Step 13: Tear down services
       - name: Tear down services
