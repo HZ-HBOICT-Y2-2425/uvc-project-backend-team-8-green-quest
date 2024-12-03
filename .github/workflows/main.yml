@@ -10,51 +10,65 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-        # Step 2: Set up Node.js environment
+      # Step 2: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-         node-version: 18
+          node-version: 18
 
-    # Step 3: Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # Step 4: Run Linter
       - name: Run Linter
         run: npm run lint
 
+      # Step 5: Set up Docker
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
+      # Step 6: Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Step 7: Build Docker Compose services
       - name: Build Docker Compose services
         run: |
           docker-compose build
 
+      # Step 8: Start services for testing
       - name: Start services for testing
         run: |
           docker-compose up -d
 
+      # Step 9: Run microservice tests
       - name: Run microservice tests
         run: |
           docker-compose exec microservice npm test
 
+      # Step 10: Run API gateway tests
       - name: Run API gateway tests
         run: |
           docker-compose exec apigateway npm test
 
+      # Step 11: Run challenges-api tests
       - name: Run challenges-api tests
         run: |
           docker-compose exec challenges-api npm test
 
+      # Step 12: Run shop-api tests
       - name: Run shop-api tests
         run: |
           docker-compose exec shop-api npm test
 
+      # Step 13: Tear down services
       - name: Tear down services
         run: |
           docker-compose down
-
-      # add details for deployment
