@@ -94,6 +94,61 @@ describe('getAllChallenges', () => {
     });
 });
 
+describe('getChallengeById', () => {
+    it('should return the challenge if found', async () => {
+        const challenge = { challengeId: 1, name: 'Challenge 1' };
+
+        // Mocking db.query to return a challenge with the specified id
+        vi.spyOn(db, 'query').mockResolvedValueOnce([challenge]);
+
+        const req = { params: { id: 1 } }; // Mocking req.params.id
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn()
+        };
+
+        await getChallengeById(req, res);
+
+        expect(db.query).toHaveBeenCalledWith('SELECT * FROM Challenges WHERE challengeId = ?', [1]);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(challenge);
+    });
+
+    it('should return 404 if challenge not found', async () => {
+        // Mocking db.query to return an empty array to simulate not finding the challenge
+        vi.spyOn(db, 'query').mockResolvedValueOnce([]);
+
+        const req = { params: { id: 1 } }; // Mocking req.params.id
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            send: vi.fn()
+        };
+
+        await getChallengeById(req, res);
+
+        expect(db.query).toHaveBeenCalledWith('SELECT * FROM Challenges WHERE challengeId = ?', [1]);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith({ error: 'Challenge not found' });
+    });
+
+    it('should return 500 if there is a server error', async () => {
+        // Mocking db.query to throw an error to simulate a server issue
+        vi.spyOn(db, 'query').mockRejectedValueOnce(new Error('Database query failed'));
+
+        const req = { params: { id: 1 } }; // Mocking req.params.id
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            send: vi.fn()
+        };
+
+        await getChallengeById(req, res);
+
+        expect(db.query).toHaveBeenCalledWith('SELECT * FROM Challenges WHERE challengeId = ?', [1]);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: 'Failed to fetch challenge due to server error' });
+    });
+});
+
 describe('seedDatabase', () => {
     it('should seed the database successfully', async () => {
         const mockSQL = 'INSERT INTO Items (id, name) VALUES (1, "Item 1")';
