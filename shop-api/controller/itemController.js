@@ -9,18 +9,19 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 
 // Utility to execute SQL files
-async function executeSqlFile(fileName) {
-    const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
+export async function executeSqlFile(fileName) {
+    const sqlFilePath = path.join(__dirname, `../../database/${fileName}`);
     console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
 
     try {
         const sql = await fs.readFile(sqlFilePath, 'utf-8');
-        const queries = sql.split(';').filter(query => query.trim() !== '');
+        const queries = sql.split(';').filter(query => query.trim() !== '');  // Split by semicolons and remove empty queries
 
         for (let query of queries) {
-            await db.query(query); 
+            console.log('Executing query:', query.trim()); // Log the query being executed
+            await db.query(query.trim());  // Ensure to trim each query before executing
         }
-        
+
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -28,10 +29,13 @@ async function executeSqlFile(fileName) {
     }
 }
 
+
+
+
 // Controller to get all items from the database
 export async function getAllItems(req, res) {
     try {
-        const [items] = await db.query('SELECT * FROM Items');
+        const {rows: items}= await db.query('SELECT * FROM Items');
         
         res.status(200).json({
             success: true,
@@ -80,6 +84,7 @@ async function setupDatabase() {
 
 // Automatically execute database setup and seeding when the server starts
 setupDatabase();
+
 
 export default router;
 

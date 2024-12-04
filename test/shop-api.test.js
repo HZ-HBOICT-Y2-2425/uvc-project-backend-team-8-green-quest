@@ -1,78 +1,112 @@
 import { describe, it, expect, vi } from 'vitest';
-import { promises as fs } from 'fs';
+import { executeSqlFile, getAllItems, seedDatabase } from '../shop-api/controller/itemController.js';
+import db from '../shop-api/db.js';
+import fs from 'fs/promises';
 import path from 'path';
-import { readChallengesFile, getAllItems } from '../shop-api/controller/itemController.js';
 
-vi.mock('fs', () => ({
-    promises: {
-        readFile: vi.fn(),
+// Mock the db module
+vi.mock('../shop-api/db.js', () => ({
+    default: {
+        query: vi.fn(), // Mock the `query` method
     },
 }));
+// Mock the fs module
+vi.mock('fs/promises');
 
-describe('Shop API tests', () => {
-    describe('readChallengesFile', () => {
-        it('should read and parse the item file correctly', async () => {
-            const mockChallenges = JSON.stringify([{ id: 1, name: 'Item 1' }]);
-            fs.readFile.mockResolvedValueOnce(mockChallenges);
-
-            const result = await readChallengesFile();
-
-            expect(fs.readFile).toHaveBeenCalledWith(
-                path.join(__dirname, '../shop-api/shop.json'),
-                'utf-8'
-            );
-            expect(result).toEqual([{ id: 1, name: 'Item 1' }]);
-        });
-
-        it('should throw an error if reading the file fails', async () => {
-            const error = new Error('File not found');
-            fs.readFile.mockRejectedValueOnce(error);
-
-            await expect(readChallengesFile()).rejects.toThrow('File not found');
-        });
+describe('executeSqlFile', () => {
+    it('executeSqlFile should execute a SQL file', async () => {
+        const mockSQL = `
+            CREATE TABLE IF NOT EXISTS test_table (id INT);
+            INSERT INTO Items (id, name) VALUES (1, "Item 1");
+        `;
+    
+        const mockFileName = 'seed-shop.sql';
+        const mockFilePath = path.join(__dirname, '../database/seed-shop.sql');
+    
+        // Mock fs and db behavior
+        fs.readFile.mockResolvedValueOnce(mockSQL);
+        db.query.mockResolvedValue({}); // Mock query success
+    
+        await executeSqlFile(mockFileName);
+    
+        // Assertions
+        expect(fs.readFile).toHaveBeenCalledWith(mockFilePath, 'utf-8');
+        expect(db.query).toHaveBeenCalledWith('CREATE TABLE IF NOT EXISTS test_table (id INT)');
+        expect(db.query).toHaveBeenCalledWith('INSERT INTO Items (id, name) VALUES (1, "Item 1")');
+        expect(db.query).toHaveBeenCalledTimes(2);
     });
 
-    describe('return all of the items in the shop', () => {
-        it('should return all of the items in the shop', async () => {
-            const mockItems = ([
-                { id: 1, name: 'Item 1' },
-                { id: 2, name: 'Item 2' },
-                { id: 3, name: 'Item 3' }
-            ]);
+    it('should throw an error if file not found', async () => {
+        fs.readFile.mockRejectedValueOnce(new Error('File not found'));
 
-            fs.readFile.mockResolvedValueOnce(JSON.stringify(mockItems));
+        await expect(executeSqlFile('../database/database.sql')).rejects.toThrow('File not found');
+    });
 
-            const req = {};
-            const res = {
-                status: vi.fn().mockReturnThis(),
-                send: vi.fn(),
-            };
+    it('should throw an error if query fails', async () => {
+        fs.readFile.mockResolvedValueOnce('CREATE TABLE IF NOT EXISTS test_table (id INT);');
+        db.query.mockRejectedValueOnce(new Error('Query failed'));
 
-            await getAllItems(req, res);
-
-            expect(fs.readFile).toHaveBeenCalledWith(
-                path.join(__dirname, '../shop-api/shop.json'), 'utf-8'
-            );
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith(mockItems);
-        });
-
-        it('should return 500 error if it can not fetch data', async () => {
-            const error = new Error('Fetching error');
-
-            fs.readFile.mockRejectedValueOnce(error);
-
-            const req = {};
-            const res = {
-                status: vi.fn().mockReturnThis(),
-                send: vi.fn(),
-            };
-
-            await getAllItems(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.send).toHaveBeenCalledWith({ error: 'Failed to fetch challenges' });
-
-        })
+        await expect(executeSqlFile('database.sql')).rejects.toThrow('Query failed');
     });
 });
+
+describe('getAllItems', () => {
+    it('should fetch all items successfully', async () => {
+        const mockItems = [{ id: 1, name: 'Item 1' }];
+        db.query.mockResolvedValueOnce({ rows: mockItems });
+
+        const req = {};
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+
+        await getAllItems(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Items fetched successfully',
+            data: mockItems,
+        });
+    });
+
+    it('should handle database query errors', async () => {
+        db.query.mockRejectedValueOnce(new Error('Database query failed'));
+
+        const req = {};
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+
+        await getAllItems(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Failed to fetch items from the database',
+            error: 'Database query failed',
+        });
+    });
+});
+
+describe('seedDatabase', () => {
+    it('should seed the database successfully', async () => {
+        const mockSQL = 'INSERT INTO Items (id, name) VALUES (1, "Item 1");';
+        fs.readFile.mockResolvedValueOnce(mockSQL);
+        db.query.mockResolvedValueOnce([{ rows: [] }]);
+
+        await seedDatabase();
+
+        expect(fs.readFile).toHaveBeenCalledWith(path.join(__dirname, '../database/seed-shop.sql'), 'utf-8');
+        expect(db.query).toHaveBeenCalledWith('INSERT INTO Items (id, name) VALUES (1, "Item 1")');
+    });
+
+    it('should handle errors during seeding', async () => {
+        fs.readFile.mockRejectedValueOnce(new Error('File not found'));
+
+        await expect(seedDatabase()).rejects.toThrow('File not found');
+    });
+});
+
