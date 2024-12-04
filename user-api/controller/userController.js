@@ -8,6 +8,16 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
+export async function getAllUsers(req, res) {
+    try {
+        const [users] = await db.query('SELECT * FROM Users');
+        res.status(200).send(users);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send({ error: 'Failed to fetch users' });
+    }
+}
+
 // Utility to execute SQL files
 async function executeSqlFile(fileName) {
     const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
