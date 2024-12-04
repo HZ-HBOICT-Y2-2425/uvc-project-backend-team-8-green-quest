@@ -7,12 +7,8 @@ USE EcoApp;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Drop the tables if they exist
-DROP TABLE IF EXISTS Shop;
-DROP TABLE IF EXISTS ChallengeUser;
-DROP TABLE IF EXISTS Friendship;
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Challenges;
-DROP TABLE IF EXISTS Users;
 
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
@@ -64,6 +60,8 @@ CREATE TABLE IF NOT EXISTS ChallengeUser (
     challengeUserID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     challengeID INT NOT NULL,
+    dateAssigned DATE NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (challengeID) REFERENCES Challenges(challengeID)
 );

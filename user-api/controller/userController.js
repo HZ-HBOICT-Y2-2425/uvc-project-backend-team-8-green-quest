@@ -18,6 +18,61 @@ export async function getAllUsers(req, res) {
     }
 }
 
+export async function getDailyChallenges(req, res) {
+    try {
+        const [lastInserted] = await db.query('SELECT * FROM ChallengeUser ORDER BY challengeUserID DESC LIMIT 1');
+        const today = new Date().toISOString().split('T')[0];
+
+        const formattedDate = new Date(lastInserted[0].dateAssigned).toISOString().split('T')[0];
+
+        if (formattedDate == today) {
+            res.status(200).send("No need to update challenges");
+        }
+        else {
+            // Retrieve all challenges from the database
+            const [challenges] = await db.query('SELECT * FROM Challenges');
+            if (challenges.length < 3) {
+                return res.status(400).send({ error: 'Not enough challenges available' });
+            }
+
+            // Get 3 random unique indices
+            const randomIndices = getRandomIndices(challenges.length);
+
+            // Map the indices to actual challenges
+            const dailyChallenges = randomIndices.map(index => challenges[index]);
+
+            for (let i = 0; i < 3; i++) {
+                await db.query(
+                    `INSERT INTO ChallengeUser (userID, challengeID, completed, dateAssigned) VALUES (?, ?, TRUE, ?)`,
+                    [1, dailyChallenges[i].challengeID, today]
+                );
+            }
+
+            const [challengeUsers] = await db.query('SELECT * FROM ChallengeUser');
+            res.status(200).send("DailyChallengesUpdated");
+        }
+    } catch (error) {
+        console.error('Error fetching daily challenges:', error);
+        res.status(500).send({ error: 'Failed to fetch daily challenges' });
+    }
+}
+
+// Utility function to get 3 random unique indices
+function getRandomIndices(arrayLength, count = 3) {
+    if (arrayLength < count) {
+        throw new Error('Not enough elements to extract unique indices.');
+    }
+
+    const indices = new Set();
+    while (indices.size < count) {
+        const randomIndex = Math.floor(Math.random() * arrayLength);
+        indices.add(randomIndex);
+    }
+
+    return Array.from(indices);
+}
+
+
 // Utility to execute SQL files
 async function executeSqlFile(fileName) {
     const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
@@ -28,9 +83,9 @@ async function executeSqlFile(fileName) {
         const queries = sql.split(';').filter(query => query.trim() !== '');
 
         for (let query of queries) {
-            await db.query(query); 
+            await db.query(query);
         }
-        
+
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -54,9 +109,6 @@ export async function seedDatabase() {
 async function setupDatabase() {
     try {
         console.log('Starting database setup...');
-        
-        // Execute the primary database setup script
-        await executeSqlFile('database.sql');
 
         // Then seed the database
         await seedDatabase();
