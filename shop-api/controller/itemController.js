@@ -10,18 +10,17 @@ const router = express.Router();
 
 // Utility to execute SQL files
 export async function executeSqlFile(fileName) {
-    const sqlFilePath = path.join(__dirname, `../../database/${fileName}`);
+    const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
     console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
 
     try {
         const sql = await fs.readFile(sqlFilePath, 'utf-8');
-        const queries = sql.split(';').filter(query => query.trim() !== '');  // Split by semicolons and remove empty queries
+        const queries = sql.split(';').filter(query => query.trim() !== '');
 
         for (let query of queries) {
-            console.log('Executing query:', query.trim()); // Log the query being executed
-            await db.query(query.trim());  // Ensure to trim each query before executing
+            await db.query(query); 
         }
-
+        
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -29,18 +28,16 @@ export async function executeSqlFile(fileName) {
     }
 }
 
-
-
-
 // Controller to get all items from the database
 export async function getAllItems(req, res) {
     try {
-        const {rows: items}= await db.query('SELECT * FROM Items');
+        // Assume db.query returns an array of items directly, not wrapped in `rows`
+        const items = await db.query('SELECT * FROM Items');
         
         res.status(200).json({
             success: true,
             message: 'Items fetched successfully',
-            data: items,
+            data: items, // Use the result directly without `.rows`
         });
     } catch (error) {
         console.error('Database query error:', error.message);
@@ -66,7 +63,7 @@ export async function seedDatabase() {
 }
 
 // Database setup and seeding on startup
-async function setupDatabase() {
+export async function setupDatabase() {
     try {
         console.log('Starting database setup...');
         
@@ -84,7 +81,6 @@ async function setupDatabase() {
 
 // Automatically execute database setup and seeding when the server starts
 setupDatabase();
-
 
 export default router;
 

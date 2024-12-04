@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Utility to execute SQL files
 export async function executeSqlFile(fileName) {
-    const sqlFilePath = path.join(__dirname, `../../database/${fileName}`);
+    const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
     console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
 
     try {
@@ -30,20 +30,22 @@ export async function executeSqlFile(fileName) {
 
 export async function getAllChallenges(req, res) {
     try {
-        const { rows: challenges } = await db.query('SELECT * FROM Challenges');
+        const [challenges] = await db.query('SELECT * FROM Challenges');
         res.status(200).json({
             success: true,
             message: 'Items fetched successfully',
-            data: challenges,
+            data: challenges 
         });
     } catch (error) {
+        console.error('Error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch challenges',
-            error: error.message,
+            error: 'Database query failed'
         });
     }
 }
+
 
 export async function getChallengeById(req, res) {
     try {
@@ -87,7 +89,5 @@ export async function setupDatabase() {
     }
 }
 
-// setup database automatically
+// setuo database automatically
 setupDatabase();
-
-
