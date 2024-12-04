@@ -45,10 +45,12 @@ export async function getDailyChallenges(req, res) {
                 await db.query(
                     `INSERT INTO ChallengeUser (userID, challengeID, completed, dateAssigned) VALUES (?, ?, TRUE, ?)`,
                     [1, dailyChallenges[i].challengeID, today]
+                    // userID needs to be updated with request userID
                 );
             }
 
             const [challengeUsers] = await db.query('SELECT * FROM ChallengeUser');
+            console.log(challengeUsers);
             res.status(200).send("DailyChallengesUpdated");
         }
     } catch (error) {
@@ -56,6 +58,44 @@ export async function getDailyChallenges(req, res) {
         res.status(500).send({ error: 'Failed to fetch daily challenges' });
     }
 }
+
+export async function completeChallenge(req, res) {
+    try {
+        const { userID, challengeID } = req.query;
+
+        if (!userID || !challengeID) {
+            return res.status(400).send({ error: 'UserID and ChallengeID are required' });
+        }
+
+        // Retrieve the most recent entry for this user and challenge
+        const [challengeUser] = await db.query(
+            'SELECT * FROM ChallengeUser WHERE userID = ? AND challengeID = ? ORDER BY challengeUserID DESC LIMIT 1',
+            [userID, challengeID]
+        );
+
+        // Check if the challengeUser entry exists
+        if (challengeUser.length === 0) {
+            return res.status(404).send({ error: 'Challenge not found for the user' });
+        }
+
+        // Update the "completed" field to TRUE
+        await db.query(
+            'UPDATE ChallengeUser SET completed = TRUE WHERE challengeUserID = ?',
+            [challengeUser[0].challengeUserID]
+        );
+
+        console.log(await db.query(
+            'SELECT * FROM ChallengeUser WHERE userID = ? AND challengeID = ? ORDER BY challengeUserID DESC LIMIT 1',
+            [userID, challengeID]
+        ));
+
+        res.status(200).send({ message: 'Challenge completed successfully' });
+    } catch (error) {
+        console.error('Error completing challenge:', error);
+        res.status(500).send({ error: 'Failed to complete the challenge' });
+    }
+}
+
 
 // Utility function to get 3 random unique indices
 function getRandomIndices(arrayLength, count = 3) {
