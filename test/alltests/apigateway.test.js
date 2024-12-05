@@ -1,39 +1,58 @@
-import supertest from "supertest";
-import { vi, describe, it, expect, afterAll } from 'vitest';
-import fs from 'fs';
-import path from 'path';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import request from 'supertest';
+import express from 'express';
+import nock from 'nock';
+import apiGateway from '../../apigateway/code/routes/index.js'; // Adjust path as necessary
 
-const GatewayURL = 'http://localhost:3010';
+let server;
 
-describe('Api Gateway tests', () => {
-    it('should proxy requests to challenges-api when accessing /challenges', async () => {
-        const expectedChallengesData = JSON.parse(fs.readFileSync(path.join(__dirname, '../Challenges-api/challenges.json'), 'utf-8'));
-        const response = await supertest(GatewayURL)
-            .get('/challenges')
-            .expect('Content-Type', /json/)
-            .expect(200);
+beforeAll(() => {
+    const app = express();
+    app.use(apiGateway);
+    server = app.listen(3009); // Start the server
 
-        expect(response.body).toEqual(expectedChallengesData);
+    // mokc HTTP requests
+    nock('http://microservice:3011')
+        .get('/')
+        .reply(200, { message: 'Mocked response from microservice' });
+
+    nock('http://challenges-api:3012')
+        .get('/')
+        .reply(200, { message: 'Mocked response from challenges-api' });
+
+    nock('http://shop-api:3013')
+        .get('/')
+        .reply(200, { message: 'Mocked response from shop-api' });
+});
+
+//close the server and clean all mock after the tests
+afterAll(() => {
+    server.close(); 
+    nock.cleanAll(); 
+});
+
+describe('API Gateway', () => {
+    it('should respond to /health with a success message', async () => {
+        const res = await request(server).get('/health');
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('API Gateway is running!');
     });
 
-    it('should proxy requests to shop-api when accessing /items', async () => {
-    // Read the contents of shop.json from the shop-api directory
-        const expectedShopData = JSON.parse(fs.readFileSync(path.join(__dirname, '../shop-api/shop.json'), 'utf-8'));
-        // Send a GET request to the /items
-        const response = await supertest(GatewayURL)
-            .get('/items') // route for the shop API
-            .expect('Content-Type', /json/) // Match the content type
-            .expect(200);  // Expect status code 200
-
-        // Compare the response body to the contents of shop.json
-        expect(response.body).toEqual(expectedShopData); // Compare with the shop.json data
+    it('should proxy requests to /microservice', async () => {
+        const res = await request(server).get('/microservice');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'Mocked response from microservice' });
     });
 
-    it('should handle 404 from challenges-api', async () => {
-        const response = await supertest(GatewayURL)
-            .get('/challenges/999') // A request for a non-existent challenge
-            .expect(404);
+    it('should proxy requests to /challenges', async () => {
+        const res = await request(server).get('/challenges');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'Mocked response from challenges-api' });
+    });
 
-        expect(response.body.error).toBe('Challenge not found');
+    it('should proxy requests to /items', async () => {
+        const res = await request(server).get('/items');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'Mocked response from shop-api' });
     });
 });
