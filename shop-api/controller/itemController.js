@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 
 // Utility to execute SQL files
-async function executeSqlFile(fileName) {
+export async function executeSqlFile(fileName) {
     const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
     console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
 
@@ -31,12 +31,13 @@ async function executeSqlFile(fileName) {
 // Controller to get all items from the database
 export async function getAllItems(req, res) {
     try {
-        const [items] = await db.query('SELECT * FROM Items');
+        // Assume db.query returns an array of items directly, not wrapped in `rows`
+        const items = await db.query('SELECT * FROM Items');
         
         res.status(200).json({
             success: true,
             message: 'Items fetched successfully',
-            data: items,
+            data: items, // Use the result directly without `.rows`
         });
     } catch (error) {
         console.error('Database query error:', error.message);
@@ -62,7 +63,7 @@ export async function seedDatabase() {
 }
 
 // Database setup and seeding on startup
-async function setupDatabase() {
+export async function setupDatabase() {
     try {
         console.log('Starting database setup...');
         
