@@ -2,6 +2,13 @@ import express from 'express';
 import db from '../db.js';
 import fs from 'fs/promises';
 import path from 'path';
+import bodyParser from 'body-parser';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { configDotenv } from 'dotenv';
+
+const app = express();
+app.use(bodyParser.json());
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
@@ -167,6 +174,81 @@ async function setupDatabase() {
     }
 }
 
+export async function register(req, res) {
+    console.log('Register endpoint hit');
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        console.log('Missing fields:', { username, password });
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = 'INSERT INTO Users (username, password) VALUES (?, ?)';
+        db.query(query, [username, hashedPassword], (err, result) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ message: 'Database error' });
+            }
+            console.log('User registered:', result);
+            res.status(201).json({ message: 'User registered successfully' });
+        });
+    } catch (err) {
+        console.error('Error hashing password:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export async function login(req, res) {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    const query = 'SELECT * FROM Users WHERE username = ?';
+    db.query(query, [username], async (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = results[0];
+
+        // Check password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
+        // Generate JWT
+        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+
+        res.status(200).json({ message: 'Login successful', token });
+    });
+}
+
+export async function profile(req, res) {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(403).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.status(200).json({ message: 'Profile data', user: decoded });
+    } catch (err) {
+        res.status(401).json({ message: 'Invalid token' });
+    }
+}
 // Automatically execute database setup and seeding when the server starts
 setupDatabase();
 

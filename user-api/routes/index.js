@@ -1,13 +1,19 @@
 import express from 'express';
-import { getAllUsers, getDailyChallenges, completeChallenge } from '../controller/userController.js';
+import * as userController from '../controller/userController.js';
 
 const router = express.Router();
 
 // Route for getting all items
-router.get('/', getAllUsers);
+router.get('/', userController.getAllUsers);
 
-router.get('/getDailyChallenges', getDailyChallenges);
+router.get('/getDailyChallenges', userController.getDailyChallenges);
 
-router.post('/completeChallenge', completeChallenge);
+router.post('/completeChallenge', userController.completeChallenge);
+
+router.post('/register', userController.register);
+
+router.post('/login', userController.login);
+
+router.get('/profile', userController.profile);
 
 export default router;

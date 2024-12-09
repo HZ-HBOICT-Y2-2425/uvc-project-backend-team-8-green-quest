@@ -10,6 +10,9 @@ const app = express();
 
 app.use(router);
 app.use(bodyParser.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.listen(3014, () => {
     console.log('Server is running on http://localhost:3014');
