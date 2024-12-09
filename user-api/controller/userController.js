@@ -6,6 +6,9 @@ import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { configDotenv } from 'dotenv';
+import dotenv from 'dotenv';
+dotenv.config(); // This loads variables from your .env file
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -175,45 +178,35 @@ async function setupDatabase() {
 }
 
 export async function register(req, res) {
-    console.log('Register endpoint hit');
-    const { username, password } = req.body;
+    const { username, password } = req.query;
 
     if (!username || !password) {
-        console.log('Missing fields:', { username, password });
         return res.status(400).json({ message: 'All fields are required' });
     }
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO Users (username, password) VALUES (?, ?)';
-        db.query(query, [username, hashedPassword], (err, result) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ message: 'Database error' });
-            }
-            console.log('User registered:', result);
-            res.status(201).json({ message: 'User registered successfully' });
-        });
+        const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
+        const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
-        console.error('Error hashing password:', err);
+        console.error('Database or hashing error:', err);
         res.status(500).json({ message: 'Internal server error' });
     }
 }
 
 export async function login(req, res) {
-    const { username, password } = req.body;
+    const { username, password } = req.query;
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
 
-    const query = 'SELECT * FROM Users WHERE username = ?';
-    db.query(query, [username], async (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Database error' });
-        }
-
+    try {
+        // Query to fetch user from database
+        const query = 'SELECT * FROM Users WHERE username = ?';
+        const [results] = await db.query(query, [username]); // Await the promise returned by db.query
+        
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -226,13 +219,16 @@ export async function login(req, res) {
             return res.status(401).json({ message: 'Invalid password' });
         }
 
-        // Generate JWT
+        // Generate JWT token
         const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
-            expiresIn: '1h'
+            expiresIn: '1h',
         });
 
-        res.status(200).json({ message: 'Login successful', token });
-    });
+        return res.status(200).json({ message: 'Login successful', token });
+    } catch (err) {
+        console.error('Error during login:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 }
 
 export async function profile(req, res) {
@@ -244,7 +240,16 @@ export async function profile(req, res) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.status(200).json({ message: 'Profile data', user: decoded });
+        
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        if (decoded.exp < currentTimestamp) {
+            return res.status(401).json({ message: 'Token has expired' });
+        }
+
+        const query = 'SELECT * FROM Users WHERE username = ?';
+        const [results] = await db.query(query, [decoded.username]);
+
+        res.status(200).json({ message: 'Profile data', results });
     } catch (err) {
         res.status(401).json({ message: 'Invalid token' });
     }

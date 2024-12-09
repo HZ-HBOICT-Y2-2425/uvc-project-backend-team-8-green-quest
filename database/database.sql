@@ -17,6 +17,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     username CHAR(20) NOT NULL,
+    password CHAR(100) NOT NULL,
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
     habits CHAR(100)
