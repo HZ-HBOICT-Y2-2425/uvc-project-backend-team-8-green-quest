@@ -84,6 +84,14 @@ export async function completeChallenge(req, res) {
             [challengeUser[0].challengeUserID]
         );
 
+        await db.query(
+            `UPDATE User 
+             JOIN Challenge ON Challenge.challengeID = ? 
+             SET User.coins = User.coins + Challenge.coins 
+             WHERE User.userID = ? AND User.challengeID = ?`,
+            [challengeID, userID, challengeID]
+        );
+
         console.log(await db.query(
             'SELECT * FROM ChallengeUser WHERE userID = ? AND challengeID = ? ORDER BY challengeUserID DESC LIMIT 1',
             [userID, challengeID]
