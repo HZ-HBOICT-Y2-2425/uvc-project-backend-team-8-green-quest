@@ -19,6 +19,6 @@ router.get('/profile', userController.profile);
 router.post('/purchase', userController.purchaseItem);
 
 // Route to get all purchased items
-router.get('/userItems', userController.ItemUser);
+router.get('/userItems', userController.getItemUser);
 
 export default router;
