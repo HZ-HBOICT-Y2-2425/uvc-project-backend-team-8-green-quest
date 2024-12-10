@@ -2,6 +2,7 @@ import express from 'express';
 import db from '../db.js';
 import fs from 'fs/promises';
 import path from 'path';
+import { error } from 'console';
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
@@ -67,7 +68,7 @@ export async function seedDatabase() {
     }
 }
 
-async function setupDatabase() {
+export async function setupDatabase() {
     try {
         console.log('Starting database setup...');
 
@@ -80,6 +81,42 @@ async function setupDatabase() {
         console.error('Error setting up and seeding database:', error);
     }
 }
+
+export async function complete(req, res) {
+    const challengeID = Number(req.params.id); 
+
+    console.log(challengeID);
+
+    if (!challengeID) {
+        return res.status(400).json({ error: "challengeID is required" });
+    }
+
+    try {
+        const [challenge] = await db.query(
+            'SELECT CO2_reduction_kg FROM Challenges WHERE challengeID = ?', [challengeID]
+        );
+
+        if (challenge.length === 0) {
+            return res.status(404).json({ error: "Challenge not found" });
+        }
+
+        const co2Reduction = parseFloat(challenge[0].CO2_reduction_kg);
+
+        await db.query(
+            'UPDATE Users SET co2Saved = co2Saved + ? WHERE userID = 1', [co2Reduction]
+        );
+
+        res.json({
+            success: true,
+            message: 'Challenge completed',
+            co2Reduction, 
+        });
+    } catch (error) {
+        console.error('Error completing challenge', error);
+        res.status(500).json({ error: 'An error occurred while completing the challenge' });
+    }
+}
+
 
 // setuo database automatically
 setupDatabase();
