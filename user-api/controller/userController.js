@@ -20,44 +20,61 @@ export async function getAllUsers(req, res) {
 
 export async function getDailyChallenges(req, res) {
     try {
-        const [lastInserted] = await db.query('SELECT * FROM ChallengeUser ORDER BY challengeUserID DESC LIMIT 1');
-        const today = new Date().toISOString().split('T')[0];
+        const userID = 1; // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
+        
+        // Query to get the latest challenge assigned to the user
+        const [lastInserted] = await db.query(
+            'SELECT * FROM ChallengeUser WHERE userID = ? ORDER BY challengeUserID DESC LIMIT 1;', 
+            [userID]
+        );
 
-        const formattedDate = new Date(lastInserted[0].dateAssigned).toISOString().split('T')[0];
+        // Check if any row was returned
+        if (!lastInserted || lastInserted.length === 0) {
+            // If no record exists for the user, we can assume this is the user's first challenge
+            console.log("No previous challenges assigned.");
+            // Proceed to assign new daily challenges
+        } else {
+            const today = new Date().toISOString().split('T')[0];
+            const formattedDate = new Date(lastInserted[0].dateAssigned).toISOString().split('T')[0];
 
-        if (formattedDate == today) {
-            res.status(200).send("No need to update challenges");
-        }
-        else {
-            // Retrieve all challenges from the database
-            const [challenges] = await db.query('SELECT * FROM Challenges');
-            if (challenges.length < 3) {
-                return res.status(400).send({ error: 'Not enough challenges available' });
+            // If the last assigned date is today's date, skip updating
+            if (formattedDate === today) {
+                return res.status(200).send("No need to update challenges");
             }
-
-            // Get 3 random unique indices
-            const randomIndices = getRandomIndices(challenges.length);
-
-            // Map the indices to actual challenges
-            const dailyChallenges = randomIndices.map(index => challenges[index]);
-
-            for (let i = 0; i < 3; i++) {
-                await db.query(
-                    `INSERT INTO ChallengeUser (userID, challengeID, completed, dateAssigned) VALUES (?, ?, TRUE, ?)`,
-                    [1, dailyChallenges[i].challengeID, today]
-                    // userID needs to be updated with request userID
-                );
-            }
-
-            const [challengeUsers] = await db.query('SELECT * FROM ChallengeUser');
-            console.log(challengeUsers);
-            res.status(200).send("DailyChallengesUpdated");
         }
+
+        // Retrieve all challenges from the database
+        const [challenges] = await db.query('SELECT * FROM Challenges');
+        if (challenges.length < 3) {
+            return res.status(400).send({ error: 'Not enough challenges available' });
+        }
+
+        // Get 3 random unique indices
+        const randomIndices = getRandomIndices(challenges.length);
+
+        // Map the indices to actual challenges
+        const dailyChallenges = randomIndices.map(index => challenges[index]);
+
+        // Insert new challenges for the user
+        const today = new Date().toISOString().split('T')[0]; // Get today's date
+        for (let i = 0; i < 3; i++) {
+            await db.query(
+                `INSERT INTO ChallengeUser (userID, challengeID, completed, dateAssigned) VALUES (?, ?, 1, ?)`,
+                [userID, dailyChallenges[i].challengeID, today]
+            );
+        }
+
+        const [challengeUsers] = await db.query('SELECT * FROM ChallengeUser');
+        console.log(challengeUsers);
+
+        // Send success response
+        res.status(200).send("DailyChallengesUpdated");
     } catch (error) {
         console.error('Error fetching daily challenges:', error);
         res.status(500).send({ error: 'Failed to fetch daily challenges' });
     }
 }
+
 
 export async function completeChallenge(req, res) {
     try {

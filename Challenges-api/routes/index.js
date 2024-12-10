@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllChallenges, getChallengeById, complete } from '../challengesController/challengesController.js';  // Import controller methods
+import { getAllChallenges, getChallengeById, complete, status } from '../challengesController/challengesController.js';  // Import controller methods
 
 const router = express.Router();
 
@@ -7,8 +7,10 @@ const router = express.Router();
 router.get('/', getAllChallenges);
 
 // Route for getting a specific challenge by ID
-router.get('/:id', getChallengeById);
+router.get('/id/:id', getChallengeById);
 
 router.get('/complete/:id', complete);
+
+router.get('/status', status);
 
 export default router;

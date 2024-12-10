@@ -84,42 +84,78 @@ export async function setupDatabase() {
 
 export async function complete(req, res) {
     const challengeID = Number(req.params.id); 
+    const userID = 1;
 
-    console.log(challengeID);
-
-    if (!challengeID) {
+    if (!userID || !challengeID) {
         return res.status(400).json({ error: "challengeID is required" });
     }
 
     try {
+        // Fetch challenge details
         const [challenge] = await db.query(
-            'SELECT CO2_reduction_kg, coins FROM Challenges WHERE challengeID = ?', [challengeID]
+            'SELECT CO2_reduction_kg, coins FROM Challenges WHERE challengeID = ?', 
+            [challengeID]
         );
-
-        if (challenge.length === 0) {
+    
+        if (!challenge || challenge.length === 0) {
             return res.status(404).json({ error: "Challenge not found" });
         }
-
+    
         const co2Reduction = parseFloat(challenge[0].CO2_reduction_kg);
         const coins = parseFloat(challenge[0].coins);
+    
+        await db.query('UPDATE Users SET co2Saved = co2Saved + ? WHERE userID = ?', [co2Reduction, userID]);
+        await db.query('UPDATE Users SET coins = coins + ? WHERE userID = ?', [coins, userID]);
+        await db.query('INSERT INTO ChallengeUser(userID, challengeID) VALUES ( ?, ?) ', [userID, challengeID]);
 
-        await db.query(
-            'UPDATE Users SET co2Saved = co2Saved + ? WHERE userID = 1', [co2Reduction]
+        //SOLVE: that sql code is not being executed
+        try {
+            const updateResult = await db.query(
+        'UPDATE ChallengeUser SET completed = 1 WHERE challengeID = ? AND userID = ?', 
+        [challengeID, userID]
+         );
+          } catch (error) {
+            console.error('Error during update:', error);
+        }
+    
+        const [updatedStatus] = await db.query(
+            'SELECT completed FROM ChallengeUser WHERE challengeID = ? AND userID = ?', 
+            [challengeID, userID]
         );
 
-        await db.query(
-            'UPDATE Users SET coins = coins + ? WHERE userID = 1', [coins]
-        );
-
+        const completed = updatedStatus.length > 0 ? updatedStatus[0].completed : false;
+    
         res.json({
             success: true,
             message: 'Challenge completed',
             co2Reduction,
-            coins 
+            coins,
+            completed,
         });
     } catch (error) {
         console.error('Error completing challenge', error);
         res.status(500).json({ error: 'An error occurred while completing the challenge' });
+    }
+}
+
+export async function status(req, res) {
+    const userID = 1; // Replace with dynamic user ID as needed
+
+    try {
+        // Query the database for challenges where `completed` is true
+        const [statuses] = await db.query(
+            'SELECT challengeID, completed FROM ChallengeUser WHERE completed = ? AND userID = ?',
+            [1, userID] // Use 1 for true if `completed` is stored as TINYINT(1)
+        );
+
+        if (!statuses || statuses.length === 0) {
+            return res.status(404).json({ message: "No completed challenges found" });
+        }
+
+        res.status(200).json(statuses);
+    } catch (error) {
+        console.error('Error fetching challenge statuses:', error);
+        res.status(500).json({ error: 'Failed to fetch challenge statuses' });
     }
 }
 

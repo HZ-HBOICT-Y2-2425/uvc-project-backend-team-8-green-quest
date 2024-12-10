@@ -9,6 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Drop the tables if they exist
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Challenges;
+DROP TABLE IF EXISTS ChallengeUser;
 
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
@@ -17,6 +18,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     username CHAR(20) NOT NULL,
+    password CHAR(100) NOT NULL DEFAULT '',
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
     habits CHAR(100)
@@ -60,7 +62,7 @@ CREATE TABLE IF NOT EXISTS ChallengeUser (
     challengeUserID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     challengeID INT NOT NULL,
-    dateAssigned DATE NOT NULL,
+    dateAssigned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (challengeID) REFERENCES Challenges(challengeID)
@@ -74,6 +76,7 @@ CREATE TABLE IF NOT EXISTS Friendship (
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (user2ID) REFERENCES Users(userID)
 );
+
 
 
 
