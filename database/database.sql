@@ -12,7 +12,6 @@ DROP TABLE IF EXISTS ChallengeUser;
 DROP TABLE IF EXISTS Friendship;
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Challenges;
-DROP TABLE IF EXISTS Users;
 
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;

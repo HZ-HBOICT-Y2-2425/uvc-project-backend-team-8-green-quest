@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const app = express();
 
 app.use(router);
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.listen(3014, () => {
     console.log('Server is running on http://localhost:3014');

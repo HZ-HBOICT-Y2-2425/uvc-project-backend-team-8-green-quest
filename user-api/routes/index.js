@@ -1,9 +1,15 @@
 import express from 'express';
-import { getAllUsers } from '../controller/userController.js';
+import { getAllUsers, purchaseItem } from '../controller/userController.js';
+import { login } from '../controller/userController.js';
 
 const router = express.Router();
 
-// Route for getting all items
+// Route to get all users
 router.get('/', getAllUsers);
+
+// Route to purchase an item
+router.post('/purchase', purchaseItem);
+
+router.post('/login', login);
 
 export default router;
