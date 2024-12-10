@@ -93,7 +93,7 @@ export async function complete(req, res) {
 
     try {
         const [challenge] = await db.query(
-            'SELECT CO2_reduction_kg FROM Challenges WHERE challengeID = ?', [challengeID]
+            'SELECT CO2_reduction_kg, coins FROM Challenges WHERE challengeID = ?', [challengeID]
         );
 
         if (challenge.length === 0) {
@@ -101,15 +101,21 @@ export async function complete(req, res) {
         }
 
         const co2Reduction = parseFloat(challenge[0].CO2_reduction_kg);
+        const coins = parseFloat(challenge[0].coins);
 
         await db.query(
             'UPDATE Users SET co2Saved = co2Saved + ? WHERE userID = 1', [co2Reduction]
         );
 
+        await db.query(
+            'UPDATE Users SET coins = coins + ? WHERE userID = 1', [coins]
+        );
+
         res.json({
             success: true,
             message: 'Challenge completed',
-            co2Reduction, 
+            co2Reduction,
+            coins 
         });
     } catch (error) {
         console.error('Error completing challenge', error);
