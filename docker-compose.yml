@@ -81,6 +81,27 @@ services:
     depends_on:
       - mysql
 
+  user-api:
+    container_name: user-api
+    build: ./user-api
+    volumes:
+      - ./user-api:/usr/src/app
+      - ./database:/usr/src/app/database
+    networks:
+      - msexample
+    ports:
+      - "3014:3014"
+    working_dir: /usr/src/app
+    command: bash -c "npm install && node start.js user"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: examplepassword
+      DB_NAME: EcoApp
+      DB_PORT: 3306
+    depends_on:
+      - mysql
+
   mysql:
     container_name: mysql
     image: mysql:8.0
