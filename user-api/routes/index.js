@@ -21,4 +21,6 @@ router.post('/purchase', userController.purchaseItem);
 // Route to get all purchased items
 router.get('/userItems', userController.getItemUser);
 
+router.post('/logout', userController.logout);
+
 export default router;

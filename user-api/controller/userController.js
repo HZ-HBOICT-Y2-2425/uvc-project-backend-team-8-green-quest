@@ -373,6 +373,21 @@ export async function profile(req, res) {
         res.status(401).json({ message: 'Invalid token' });
     }
 }
+
+export async function logout(req, res) { 
+    const token = req.headers['authorization'];
+    if (!token) {
+        return res.status(400).json({ message: 'Token is required for logout' });
+    }
+
+    try {
+
+        res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 // Automatically execute database setup and seeding when the server starts
 setupDatabase();
 
