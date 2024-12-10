@@ -15,5 +15,10 @@ router.post('/register', userController.register);
 router.post('/login', userController.login);
 
 router.get('/profile', userController.profile);
+// Route to purchase an item
+router.post('/purchase', userController.purchaseItem);
+
+// Route to get all purchased items
+router.get('/userItems', userController.ItemUser);
 
 export default router;
