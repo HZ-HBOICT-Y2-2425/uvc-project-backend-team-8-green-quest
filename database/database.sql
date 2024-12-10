@@ -7,9 +7,7 @@ USE EcoApp;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Drop the tables if they exist
-DROP TABLE IF EXISTS Shop;
 DROP TABLE IF EXISTS ChallengeUser;
-DROP TABLE IF EXISTS Friendship;
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Challenges;
 
@@ -22,7 +20,8 @@ CREATE TABLE IF NOT EXISTS Users (
     username CHAR(20) NOT NULL,
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
-    habits CHAR(100)
+    habits CHAR(100),
+    password CHAR(100) NOT NULL
 );
 
 -- Table: Items
@@ -42,6 +41,8 @@ CREATE TABLE IF NOT EXISTS Shop (
     userID INT NOT NULL,
     posY INT NOT NULL,
     posX INT NOT NULL,
+    height INT NOT NULL,
+    width INT NOT NULL,
     FOREIGN KEY (itemID) REFERENCES Items(itemID),
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
