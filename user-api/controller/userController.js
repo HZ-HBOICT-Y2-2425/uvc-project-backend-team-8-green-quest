@@ -351,26 +351,32 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const token = req.headers['authorization'];
+    const token = req.headers['authorization']; // Extract the token from the Authorization header
 
     if (!token) {
         return res.status(403).json({ message: 'No token provided' });
     }
 
     try {
+        // Verify the token and extract the payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        const currentTimestamp = Math.floor(Date.now() / 1000);
-        if (decoded.exp < currentTimestamp) {
-            return res.status(401).json({ message: 'Token has expired' });
+
+        // Use the correct column name (userID) in the query
+        const query = 'SELECT username, co2Saved, coins, habits FROM Users WHERE userID = ?';
+        const [results] = await db.query(query, [decoded.id]); // Use decoded.id to fetch user details
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        const query = 'SELECT * FROM Users WHERE username = ?';
-        const [results] = await db.query(query, [decoded.username]);
-
-        res.status(200).json({ message: 'Profile data', results });
+        // Return the user's profile data
+        res.status(200).json({
+            message: 'Profile data retrieved successfully',
+            profile: results[0], // Return only the necessary fields
+        });
     } catch (err) {
-        res.status(401).json({ message: 'Invalid token' });
+        console.error('Error verifying token or fetching profile:', err);
+        return res.status(401).json({ message: 'Invalid or expired token' });
     }
 }
 
