@@ -12,7 +12,6 @@ app.use(router);
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
 
 app.listen(3014, () => {
