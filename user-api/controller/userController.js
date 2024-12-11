@@ -2,6 +2,16 @@ import express from 'express';
 import db from '../db.js';
 import fs from 'fs/promises';
 import path from 'path';
+import bodyParser from 'body-parser';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { configDotenv } from 'dotenv';
+import dotenv from 'dotenv';
+dotenv.config(); // This loads variables from your .env file
+
+
+const app = express();
+app.use(bodyParser.json());
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
@@ -303,27 +313,105 @@ async function setupDatabase() {
     }
 }
 
-async function executeSqlFile(fileName) {
-    const sqlFilePath = path.join(__dirname, `../database/${fileName}`);
-    console.log(`Attempting to read SQL file from: ${sqlFilePath}`);
+export async function register(req, res) {
+    const { username, password } = req.query;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
 
     try {
-        const sql = await fs.readFile(sqlFilePath, 'utf-8');
-        const queries = sql.split(';').filter(query => query.trim() !== '');
-
-        for (let query of queries) {
-            await db.query(query);
-        }
-
-        console.log(`${fileName} executed successfully.`);
-    } catch (error) {
-        console.error(`Error executing SQL file ${fileName}:`, error);
-        throw error;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
+        const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        console.error('Database or hashing error:', err);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
+export async function login(req, res) {
+    const { username, password } = req.query;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    try {
+        // Query to fetch user from database
+        const query = 'SELECT * FROM Users WHERE username = ?';
+        const [results] = await db.query(query, [username]); // Await the promise returned by db.query
+        
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = results[0];
+
+        // Check password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+
+        return res.status(200).json({ message: 'Login successful', token });
+    } catch (err) {
+        console.error('Error during login:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export async function profile(req, res) {
+    const token = req.headers['authorization']; // Extract the token from the Authorization header
+
+    if (!token) {
+        return res.status(403).json({ message: 'No token provided' });
+    }
+
+    try {
+        // Verify the token and extract the payload
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Use the correct column name (userID) in the query
+        const query = 'SELECT username, co2Saved, coins, habits FROM Users WHERE userID = ?';
+        const [results] = await db.query(query, [decoded.id]); // Use decoded.id to fetch user details
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return the user's profile data
+        res.status(200).json({
+            message: 'Profile data retrieved successfully',
+            profile: results[0], // Return only the necessary fields
+        });
+    } catch (err) {
+        console.error('Error verifying token or fetching profile:', err);
+        return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+}
+
+export async function logout(req, res) { 
+    const token = req.headers['authorization'];
+    if (!token) {
+        return res.status(400).json({ message: 'Token is required for logout' });
+    }
+
+    try {
+
+        res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 // Automatically execute database setup and seeding when the server starts
 setupDatabase();
-
 
 export default router;

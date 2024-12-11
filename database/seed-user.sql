@@ -1,7 +1,3 @@
-INSERT INTO Users (username, password, co2Saved, coins, habits) VALUES
-('User', '', 5, 100, 'smoker')
-
-
-
-
-
+-- Insert data for Users
+INSERT INTO Users (username, co2Saved, coins, habits, password) VALUES
+('User', 5, 100, 'smoker', "1234")
