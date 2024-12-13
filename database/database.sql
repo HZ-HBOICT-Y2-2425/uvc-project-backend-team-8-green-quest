@@ -1,14 +1,28 @@
--- Create the database
 CREATE DATABASE IF NOT EXISTS EcoApp;
+
+-- Use the new database
 USE EcoApp;
+
+-- Disable foreign key checks to allow dropping tables with dependencies
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Drop the tables if they exist
+DROP TABLE IF EXISTS Friendship;
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS Challenges;
+
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Table: Users
 CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     username CHAR(20) NOT NULL,
+    password CHAR(100) NOT NULL,
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
-    habits CHAR(100)
+    habits CHAR(100),
+    password CHAR(100) NOT NULL
 );
 
 -- Table: Items
@@ -28,6 +42,8 @@ CREATE TABLE IF NOT EXISTS Shop (
     userID INT NOT NULL,
     posY INT NOT NULL,
     posX INT NOT NULL,
+    height INT NOT NULL,
+    width INT NOT NULL,
     FOREIGN KEY (itemID) REFERENCES Items(itemID),
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
@@ -39,7 +55,9 @@ CREATE TABLE IF NOT EXISTS Challenges (
     description TEXT NOT NULL,
     category VARCHAR(255) NOT NULL,
     difficulty VARCHAR(50) NOT NULL,
-    CO2_reduction_kg DECIMAL(5, 2) NOT NULL
+    CO2_reduction_kg DECIMAL(5, 2) NOT NULL,
+    coins INT NOT NULL,
+    impact TEXT NOT NULL
 );
 
 -- Table: ChallengeUser (Bridging Table)
@@ -47,6 +65,8 @@ CREATE TABLE IF NOT EXISTS ChallengeUser (
     challengeUserID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     challengeID INT NOT NULL,
+    dateAssigned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (challengeID) REFERENCES Challenges(challengeID)
 );
@@ -59,3 +79,7 @@ CREATE TABLE IF NOT EXISTS Friendship (
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (user2ID) REFERENCES Users(userID)
 );
+
+
+
+

@@ -30,4 +30,11 @@ const itemsProxy = createProxyMiddleware({
 
 router.use('/items', itemsProxy);
 
+const userProxy = createProxyMiddleware({
+    target: 'http://user-api:3014',
+    changeOrigin: true,
+});
+
+router.use('/users', userProxy);
+
 export default router;
