@@ -398,6 +398,7 @@ export async function profile(req, res) {
         console.error('Error verifying token or fetching profile:', err);
         return res.status(401).json({ message: 'Invalid or expired token' });
     }*/
+
 }
 
 export async function logout(req, res) { 
