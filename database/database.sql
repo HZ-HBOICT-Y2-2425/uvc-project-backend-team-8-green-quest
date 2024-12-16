@@ -20,8 +20,7 @@ CREATE TABLE IF NOT EXISTS Users (
     password CHAR(100) NOT NULL,
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
-    habits CHAR(100),
-    password CHAR(100)
+    habits CHAR(100)
 );
 
 -- Table: Items
