@@ -7,7 +7,6 @@ USE EcoApp;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Drop the tables if they exist
-DROP TABLE IF EXISTS Friendship;
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Challenges;
 
@@ -21,8 +20,7 @@ CREATE TABLE IF NOT EXISTS Users (
     password CHAR(100) NOT NULL,
     co2Saved FLOAT NOT NULL,
     coins INT NOT NULL,
-    habits CHAR(100),
-    password CHAR(100) NOT NULL
+    habits CHAR(100)
 );
 
 -- Table: Items

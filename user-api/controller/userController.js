@@ -368,7 +368,10 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const token = req.headers['authorization']; // Extract the token from the Authorization header
+    const query = 'SELECT * FROM Users WHERE userID = 1';
+    const [results] = await db.query(query);
+    res.status(200).json({ message: 'Profile data', results });
+    /*const token = req.headers['authorization']; // Extract the token from the Authorization header
 
     if (!token) {
         return res.status(403).json({ message: 'No token provided' });
@@ -394,7 +397,7 @@ export async function profile(req, res) {
     } catch (err) {
         console.error('Error verifying token or fetching profile:', err);
         return res.status(401).json({ message: 'Invalid or expired token' });
-    }
+    }*/
 }
 
 export async function logout(req, res) { 
