@@ -123,7 +123,6 @@ export async function getItemUser(req, res) {
 
     try {
         const [shopResult] = await db.query('SELECT * FROM Shop WHERE userID = ?', [userId]);
-        console.log('Shop result:', shopResult);
         if (!shopResult) {
             return res.status(404).send({ error: 'Shop not found' });
         }
@@ -149,7 +148,7 @@ export async function getAllUsers(req, res) {
 
 export async function getDailyChallenges(req, res) {
     try {
-        const userID = 1; // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
+        const userID = req.query.userId; // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
         
         // Query to get the latest challenge assigned to the user
         const [lastInserted] = await db.query(
