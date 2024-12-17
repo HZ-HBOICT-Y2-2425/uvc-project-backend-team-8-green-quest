@@ -358,8 +358,8 @@ export async function login(req, res) {
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
-
-        return res.status(200).json({ message: 'Login successful', token });
+        
+        return res.status(200).json({ message: 'Login successful', token: token, userId: user.userID });
     } catch (err) {
         console.error('Error during login:', err);
         return res.status(500).json({ message: 'Internal server error' });
