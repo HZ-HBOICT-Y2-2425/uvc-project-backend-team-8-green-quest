@@ -332,33 +332,32 @@ export async function register(req, res) {
 }
 
 export async function login(req, res) {
-    const { username, password } = req.query;
+    const { username, password } = req.query; // Use query params
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
 
     try {
-        // Query to fetch user from database
         const query = 'SELECT * FROM Users WHERE username = ?';
-        const [results] = await db.query(query, [username]); // Await the promise returned by db.query
-        
+        const [results] = await db.query(query, [username]);
+
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         const user = results[0];
-
-        // Check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid password' });
         }
 
-        // Generate JWT token
-        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
-            expiresIn: '1h',
-        });
+        const token = jwt.sign(
+            { id: user.userID, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
 
         return res.status(200).json({ message: 'Login successful', token });
     } catch (err) {
@@ -368,37 +367,31 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const query = 'SELECT * FROM Users WHERE userID = 1';
-    const [results] = await db.query(query);
-    res.status(200).json({ message: 'Profile data', results });
-    /*const token = req.headers['authorization']; // Extract the token from the Authorization header
-
-    if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(403).json({ message: 'No or invalid token provided' });
     }
 
+    const token = authHeader.split(' ')[1];
+
     try {
-        // Verify the token and extract the payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Use the correct column name (userID) in the query
-        const query = 'SELECT username, co2Saved, coins, habits FROM Users WHERE userID = ?';
-        const [results] = await db.query(query, [decoded.id]); // Use decoded.id to fetch user details
+        const query = 'SELECT userID, username, co2Saved, coins, habits FROM Users WHERE userID = ?';
+        const [results] = await db.query(query, [decoded.id]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Return the user's profile data
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Profile data retrieved successfully',
-            profile: results[0], // Return only the necessary fields
+            profile: results[0],
         });
     } catch (err) {
-        console.error('Error verifying token or fetching profile:', err);
+        console.error(err);
         return res.status(401).json({ message: 'Invalid or expired token' });
-    }*/
-
+    }
 }
 
 export async function logout(req, res) { 
