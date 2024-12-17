@@ -224,6 +224,11 @@ export async function completeChallenge(req, res) {
             return res.status(404).send({ error: 'Challenge not found for the user' });
         }
 
+        await db.query(
+            `UPDATE ChallengeUser SET countCompleted = countCompleted + 1 WHERE userID = ?`,
+            [userID]
+        );        
+
         // Update the "completed" field to TRUE
         await db.query(
             'UPDATE ChallengeUser SET completed = TRUE WHERE challengeUserID = ?',

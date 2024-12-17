@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS ChallengeUser (
     challengeID INT NOT NULL,
     dateAssigned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
+    countCompleted INT DEFAULT 0,
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (challengeID) REFERENCES Challenges(challengeID)
 );
