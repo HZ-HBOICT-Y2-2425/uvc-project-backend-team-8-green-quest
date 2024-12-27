@@ -148,11 +148,12 @@ export async function getAllUsers(req, res) {
 
 export async function getDailyChallenges(req, res) {
     try {
-        const userID = req.query.userId; // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
-        
+        const userID = req.query.userId;
+        console.log(userID); // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
+
         // Query to get the latest challenge assigned to the user
         const [lastInserted] = await db.query(
-            'SELECT * FROM ChallengeUser WHERE userID = ? ORDER BY challengeUserID DESC LIMIT 1;', 
+            'SELECT * FROM ChallengeUser WHERE userID = ? ORDER BY challengeUserID DESC LIMIT 1;',
             [userID]
         );
 
@@ -276,9 +277,9 @@ async function executeSqlFile(fileName) {
         const queries = sql.split(';').filter(query => query.trim() !== '');
 
         for (let query of queries) {
-            await db.query(query); 
+            await db.query(query);
         }
-        
+
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -320,10 +321,21 @@ export async function register(req, res) {
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
-        const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
-        res.status(201).json({ message: 'User registered successfully' });
+        const queryCheck = 'SELECT username FROM Users';
+        const [resultCheck] = await db.query(queryCheck);
+        if (!resultCheck.some(row => row.username === username)) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
+            const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
+
+            const queryResponse = 'SELECT * FROM Users WHERE username = ?';
+            const [resultsResponse] = await db.query(queryResponse, [username]);
+            res.status(201).json({ message: 'User registered successfully', userId: resultsResponse[0].userID });
+        } else {
+            res.status(409).json({ message: 'Username already existent, please select another one' });
+        }
+
+
     } catch (err) {
         console.error('Database or hashing error:', err);
         res.status(500).json({ message: 'Internal server error' });
@@ -357,7 +369,7 @@ export async function login(req, res) {
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
-        
+
         return res.status(200).json({ message: 'Login successful', token: token, userId: user.userID });
     } catch (err) {
         console.error('Error during login:', err);
@@ -366,18 +378,11 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(403).json({ message: 'No or invalid token provided' });
-    }
-
-    const token = authHeader.split(' ')[1];
+    const userId = req.query.userId;
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
         const query = 'SELECT userID, username, co2Saved, coins, habits FROM Users WHERE userID = ?';
-        const [results] = await db.query(query, [decoded.id]);
+        const [results] = await db.query(query, [userId]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
@@ -393,11 +398,8 @@ export async function profile(req, res) {
     }
 }
 
-export async function logout(req, res) { 
-    const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(400).json({ message: 'Token is required for logout' });
-    }
+export async function logout(req, res) {
+    const userId = req.query.userId;
 
     try {
 

@@ -149,7 +149,7 @@ export async function complete(req, res) {
 export async function status(req, res) {
     const userID = req.query.userId;
     console.log(userID);
-
+    
     try {
         // Query the database for challenges where `completed` is true
         const [statuses] = await db.query(
