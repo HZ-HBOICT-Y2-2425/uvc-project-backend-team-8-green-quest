@@ -123,7 +123,6 @@ export async function getItemUser(req, res) {
 
     try {
         const [shopResult] = await db.query('SELECT * FROM Shop WHERE userID = ?', [userId]);
-        console.log('Shop result:', shopResult);
         if (!shopResult) {
             return res.status(404).send({ error: 'Shop not found' });
         }
@@ -149,11 +148,12 @@ export async function getAllUsers(req, res) {
 
 export async function getDailyChallenges(req, res) {
     try {
-        const userID = 1; // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
-        
+        const userID = req.query.userId;
+        console.log(userID); // Ideally, replace this with a dynamic user ID, e.g., from `req.userID`
+
         // Query to get the latest challenge assigned to the user
         const [lastInserted] = await db.query(
-            'SELECT * FROM ChallengeUser WHERE userID = ? ORDER BY challengeUserID DESC LIMIT 1;', 
+            'SELECT * FROM ChallengeUser WHERE userID = ? ORDER BY challengeUserID DESC LIMIT 1;',
             [userID]
         );
 
@@ -277,9 +277,9 @@ async function executeSqlFile(fileName) {
         const queries = sql.split(';').filter(query => query.trim() !== '');
 
         for (let query of queries) {
-            await db.query(query); 
+            await db.query(query);
         }
-        
+
         console.log(`${fileName} executed successfully.`);
     } catch (error) {
         console.error(`Error executing SQL file ${fileName}:`, error);
@@ -321,10 +321,21 @@ export async function register(req, res) {
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
-        const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
-        res.status(201).json({ message: 'User registered successfully' });
+        const queryCheck = 'SELECT username FROM Users';
+        const [resultCheck] = await db.query(queryCheck);
+        if (!resultCheck.some(row => row.username === username)) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
+            const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
+
+            const queryResponse = 'SELECT * FROM Users WHERE username = ?';
+            const [resultsResponse] = await db.query(queryResponse, [username]);
+            res.status(201).json({ message: 'User registered successfully', userId: resultsResponse[0].userID });
+        } else {
+            res.status(409).json({ message: 'Username already existent, please select another one' });
+        }
+
+
     } catch (err) {
         console.error('Database or hashing error:', err);
         res.status(500).json({ message: 'Internal server error' });
@@ -332,35 +343,34 @@ export async function register(req, res) {
 }
 
 export async function login(req, res) {
-    const { username, password } = req.query;
+    const { username, password } = req.query; // Use query params
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
 
     try {
-        // Query to fetch user from database
         const query = 'SELECT * FROM Users WHERE username = ?';
-        const [results] = await db.query(query, [username]); // Await the promise returned by db.query
-        
+        const [results] = await db.query(query, [username]);
+
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         const user = results[0];
-
-        // Check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid password' });
         }
 
-        // Generate JWT token
-        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
-            expiresIn: '1h',
-        });
+        const token = jwt.sign(
+            { id: user.userID, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
 
-        return res.status(200).json({ message: 'Login successful', token });
+        return res.status(200).json({ message: 'Login successful', token: token, userId: user.userID });
     } catch (err) {
         console.error('Error during login:', err);
         return res.status(500).json({ message: 'Internal server error' });
@@ -368,44 +378,28 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const query = 'SELECT * FROM Users WHERE userID = 1';
-    const [results] = await db.query(query);
-    res.status(200).json({ message: 'Profile data', results });
-    /*const token = req.headers['authorization']; // Extract the token from the Authorization header
-
-    if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
-    }
+    const userId = req.query.userId;
 
     try {
-        // Verify the token and extract the payload
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Use the correct column name (userID) in the query
-        const query = 'SELECT username, co2Saved, coins, habits FROM Users WHERE userID = ?';
-        const [results] = await db.query(query, [decoded.id]); // Use decoded.id to fetch user details
+        const query = 'SELECT userID, username, co2Saved, coins, habits FROM Users WHERE userID = ?';
+        const [results] = await db.query(query, [userId]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Return the user's profile data
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Profile data retrieved successfully',
-            profile: results[0], // Return only the necessary fields
+            profile: results[0],
         });
     } catch (err) {
-        console.error('Error verifying token or fetching profile:', err);
+        console.error(err);
         return res.status(401).json({ message: 'Invalid or expired token' });
-    }*/
-
+    }
 }
 
-export async function logout(req, res) { 
-    const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(400).json({ message: 'Token is required for logout' });
-    }
+export async function logout(req, res) {
+    const userId = req.query.userId;
 
     try {
 
