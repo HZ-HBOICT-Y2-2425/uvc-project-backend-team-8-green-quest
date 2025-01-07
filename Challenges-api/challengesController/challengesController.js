@@ -114,11 +114,11 @@ export async function complete(req, res) {
 
         await db.query('UPDATE Users SET co2Saved = co2Saved + ? WHERE userID = ?', [co2Reduction, userID]);
         await db.query('UPDATE Users SET coins = coins + ? WHERE userID = ?', [coins, userID]);
-        await db.query('INSERT INTO ChallengeUser(userID, challengeID) VALUES ( ?, ?) ', [userID, challengeID]);
+        await db.query('UPDATE Users SET challengesCompleted = challengesCompleted + 1 WHERE userID = ?', [userID]);
 
         //SOLVE: that sql code is not being executed
         try {
-            const updateResult = await db.query(
+            await db.query(
                 'UPDATE ChallengeUser SET completed = 1 WHERE challengeID = ? AND userID = ?',
                 [challengeID, userID]
             );
@@ -149,7 +149,7 @@ export async function complete(req, res) {
 export async function status(req, res) {
     const userID = req.query.userId;
     console.log(userID);
-    
+
     try {
         // Query the database for challenges where `completed` is true
         const [statuses] = await db.query(
