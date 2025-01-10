@@ -1,6 +1,6 @@
 # Green Quest Backend
 
-## Overview 
+## Overview  
 The **Green Quest Backend** serves as the core infrastructure for the Green Quest application. It is designed to support user management, challenge tracking, CO2 savings, and gamified reward systems. The backend will eventually implement a microservices architecture with a centralized API Gateway.
 
 ## Features
