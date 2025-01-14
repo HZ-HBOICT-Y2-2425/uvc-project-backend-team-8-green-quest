@@ -14,7 +14,7 @@
   "description": "In this backend example for a project, a folder is created for each micoservice.",
   "main": "start.js",
   "scripts": {
-    "test": "vitest",
+    "test": "npm test",
     "lint": "eslint ."
   },
   "keywords": [],
