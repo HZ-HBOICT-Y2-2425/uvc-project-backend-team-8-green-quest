@@ -40,19 +40,19 @@ jobs:
 
       - name: Run Microservice tests
         run: |
-          docker-compose exec microservice npm test
+          docker-compose exec -T microservice npm test
 
       - name: Run API Gateway tests
         run: |
-          docker-compose exec apigateway npm test
+          docker-compose exec -T apigateway npm test
 
       - name: Run Challenges API tests
         run: |
-          docker-compose exec challenges-api npm test
+          docker-compose exec -T challenges-api npm test
 
       - name: Run Shop API tests
         run: |
-          docker-compose exec shop-api npm test
+          docker-compose exec -T shop-api npm test
 
       - name: Tear down services
         run: |
