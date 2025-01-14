@@ -22,7 +22,7 @@ export default [
       import: importPlugin, // Plugins must now be defined as objects
     },
     rules: {
-      "no-unused-vars": ["error", { "args": "none", "ignoreRestSiblings": true }],          // Warns about unused variables
+      "no-unused-vars": ["error", { "varsIgnorePattern": "structuredClone" }],          // Warns about unused variables
       "no-console": "off",               // Allows console statements
       "indent": ["error", 4],            // Enforces 4-space indentation                               // Enforces import order
     },
