@@ -345,7 +345,7 @@ export async function register(req, res) {
         if (!resultCheck.some(row => row.username === username)) {
             const hashedPassword = await bcrypt.hash(password, 10);
             const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
-            const [result] = await db.query(query, [username, hashedPassword, 0, 0]); // Destructure result
+            const [result] = await db.query(query, [username, hashedPassword, 34.7, 50]); // Destructure result
 
             const queryResponse = 'SELECT * FROM Users WHERE username = ?';
             const [resultsResponse] = await db.query(queryResponse, [username]);
