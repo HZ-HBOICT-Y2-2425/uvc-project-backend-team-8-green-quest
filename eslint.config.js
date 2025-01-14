@@ -15,6 +15,7 @@ export default [
       globals: {
         ...globals.browser, // Browser global variables
         ...globals.node,    // Node.js global variables
+        structuredClone: "readonly"
       },
     },
     plugins: {
