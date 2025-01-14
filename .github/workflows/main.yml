@@ -1,17 +1,18 @@
 name: CI/CD Pipeline
-
+ 
 on:
   push:
     branches:
       - release
-
+ 
 jobs:
   build-test:
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+<<<<<<< HEAD
 
       - name: Run Linter
         run: npm run lint
@@ -47,12 +48,53 @@ jobs:
         run: |
           docker-compose down
 
+=======
+ 
+      - name: Run Linter
+        run: npm run lint
+ 
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+ 
+      - name: Build Docker Compose services
+        run: |
+          docker-compose build
+ 
+      - name: Start services for testing
+        run: |
+          docker-compose up -d
+ 
+      - name: Run microservice tests
+        run: |
+          docker-compose exec microservice npm test
+ 
+      - name: Run API gateway tests
+        run: |
+          docker-compose exec apigateway npm test
+ 
+      - name: Run challenges-api tests
+        run: |
+          docker-compose exec challenges-api npm test
+ 
+      - name: Run shop-api tests
+        run: |
+          docker-compose exec shop-api npm test
+ 
+      - name: Tear down services
+        run: |
+          docker-compose down
+ 
+>>>>>>> 11d87f417a3071d02f69fc3d09d7870795fe9c51
       - name: Set Up Sonar Scanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
           unzip sonar-scanner-cli-4.7.0.2747-linux.zip
           export PATH=$PATH:$(pwd)/sonar-scanner-4.7.0.2747-linux/bin
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 11d87f417a3071d02f69fc3d09d7870795fe9c51
       - name: Run SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -62,6 +104,7 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=https://your-sonarqube-server \
             -Dsonar.login=$SONAR_TOKEN
+<<<<<<< HEAD
 
   deploy:
     needs: build-test
@@ -74,3 +117,17 @@ jobs:
       - name: Deploy to Production
         run: |
           # Add your deployment steps here
+=======
+ 
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Deploy to Production
+        run: |
+          # Add your deployment steps here
+>>>>>>> 11d87f417a3071d02f69fc3d09d7870795fe9c51
