@@ -5,7 +5,7 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { configDotenv } from 'dotenv';
+//import { configDotenv } from 'dotenv';
 import dotenv from 'dotenv';
 dotenv.config(); // This loads variables from your .env file
 
@@ -343,9 +343,9 @@ export async function register(req, res) {
         const queryCheck = 'SELECT username FROM Users';
         const [resultCheck] = await db.query(queryCheck);
         if (!resultCheck.some(row => row.username === username)) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
-            const [result] = await db.query(query, [username, hashedPassword, 34.7, 50]); // Destructure result
+            //const hashedPassword = await bcrypt.hash(password, 10);
+            //const query = 'INSERT INTO Users (username, password, co2Saved, coins) VALUES (?, ?, ?, ?)';
+            //const [result] = await db.query(query, [username, hashedPassword, 34.7, 50]); // Destructure result
 
             const queryResponse = 'SELECT * FROM Users WHERE username = ?';
             const [resultsResponse] = await db.query(queryResponse, [username]);
@@ -418,7 +418,7 @@ export async function profile(req, res) {
 }
 
 export async function logout(req, res) {
-    const userId = req.query.userId;
+    //const userId = req.query.userId;
 
     try {
 

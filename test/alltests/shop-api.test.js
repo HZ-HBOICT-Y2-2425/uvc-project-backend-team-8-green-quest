@@ -52,9 +52,12 @@ describe('executeSqlFile', () => {
 
 describe('getAllItems', () => {
     it('should fetch all items successfully', async () => {
-        const mockItems = [{ id: 1, name: 'Item 1' },
-                           { id: 2, name: 'Item 3' },        
-                           { id: 3, name: 'Item 3' }];
+        const mockItems = [
+            { id: 1, name: 'Item 1' },
+            { id: 2, name: 'Item 3' },
+            { id: 3, name: 'Item 3' }
+        ];
+          
     
         // Mock the database query to return mockItems within a `rows` property.
         db.query.mockResolvedValueOnce(mockItems);

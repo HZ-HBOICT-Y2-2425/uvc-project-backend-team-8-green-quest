@@ -1,13 +1,13 @@
-import express from 'express';
+//import express from 'express';
 import db from '../db.js';
 import fs from 'fs/promises';
 import path from 'path';
-import { error } from 'console';
+//import { error } from 'console';
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
 
-const router = express.Router();
+// const router = express.Router();
 
 // Utility to execute SQL files
 export async function executeSqlFile(fileName) {

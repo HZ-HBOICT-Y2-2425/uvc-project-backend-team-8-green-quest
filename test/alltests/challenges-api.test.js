@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { executeSqlFile, getAllChallenges, getChallengeById, seedDatabase } from '../../Challenges-api/challengesController/challengesController.js'; // Added an extra `../` to the import
+import { executeSqlFile, getAllChallenges, seedDatabase } from '../../Challenges-api/challengesController/challengesController.js'; // Added an extra `../` to the import
 import db from '../../Challenges-api/db.js'; // Added an extra `../` to the import
 import fs from 'fs/promises';
 import path from 'path';
