@@ -22,12 +22,16 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.16.0",
-    "eslint": "^9.16.0",
+    "eslint": "^9.18.0",
     "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
     "globals": "^15.13.0",
     "nock": "^13.5.6",
     "nodemon": "^3.1.7",
     "supertest": "^7.0.0",
     "vitest": "^2.1.6"
+  },
+  "globals": {
+    "structuredClone": "readonly"
   }
 }
