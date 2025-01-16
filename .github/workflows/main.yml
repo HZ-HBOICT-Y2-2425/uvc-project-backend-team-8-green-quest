@@ -43,15 +43,6 @@ jobs:
         run: |
           docker-compose up -d
 
-      - name: Wait for SonarQube to be ready
-        run: |
-          echo "Waiting for SonarQube to start..."
-          # Wait for SonarQube to be available
-          until curl -s http://localhost:9000/api/system/health | grep -q '"status":"OK"'; do
-            echo "Waiting for SonarQube to start..."
-            sleep 10
-          done
-
       - name: Run Microservice tests
         run: |
           docker-compose exec -T microservice sh -c "if [ -f apigateway.test.js ]; then npx vitest run apigateway.test.js; else echo 'Test file not found'; fi"
