@@ -14,7 +14,8 @@
   "description": "In this backend example for a project, a folder is created for each micoservice.",
   "main": "start.js",
   "scripts": {
-    "test": "npm test",
+    "test": "vitest run",
+    "test:coverage": "vitest --coverage",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -22,13 +23,19 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.18.0",
+    "eslint-plugin-complexity": "^1.0.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-sonarjs": "^3.0.1",
     "globals": "^15.13.0",
+    "mocha": "^11.0.1",
     "nock": "^13.5.6",
     "nodemon": "^3.1.7",
+    "nyc": "^17.1.0",
     "supertest": "^7.0.0",
-    "vitest": "^2.1.6"
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
   }
 }
