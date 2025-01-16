@@ -63,12 +63,7 @@ jobs:
           else
             echo "SonarQube scanner download failed or file is empty"
             exit 1
-          fi
-      - name: Test SonarQube Server Connectivity
-        run: |
-          curl -I $SONAR_HOST_URL
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    
+          fi 
 
       - name: Run SonarQube Analysis
         env:

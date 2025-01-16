@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   microservice:
     container_name: microservice
@@ -114,21 +112,23 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: examplepassword
       MYSQL_DATABASE: EcoApp
+      MYSQL_USER: sonar
+      MYSQL_PASSWORD: sonarpassword
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database:/docker-entrypoint-initdb.d 
+      - ./database:/docker-entrypoint-initdb.d
 
   sonarqube:
     container_name: sonarqube
-    image: sonarqube:community
+    image: sonarqube:latest
     networks:
       - msexample
     ports:
       - "9000:9000"
     environment:
       SONAR_JDBC_URL: jdbc:mysql://mysql:3306/EcoApp
-      SONAR_JDBC_USERNAME: root
-      SONAR_JDBC_PASSWORD: examplepassword
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonarpassword
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_logs:/opt/sonarqube/logs
@@ -145,6 +145,7 @@ volumes:
   sonarqube_data:
   sonarqube_logs:
   sonarqube_extensions:
+
 
 
 
