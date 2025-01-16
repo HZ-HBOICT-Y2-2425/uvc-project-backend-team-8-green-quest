@@ -14,6 +14,7 @@
   "description": "In this backend example for a project, a folder is created for each micoservice.",
   "main": "start.js",
   "scripts": {
+    "start": "start.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ."
   },

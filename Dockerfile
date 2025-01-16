@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3011
 
 # Command to run the application
-CMD ["node", "start.js"]
+CMD ["npm", "start"]
