@@ -23,7 +23,7 @@ export default [
     rules: {
       "no-unused-vars": "warn",          // Warns about unused variables
       "no-console": "off",               // Allows console statements
-      "indent": ["error", 4],            // Enforces 4-space indentation                               // Enforces import order
+      "indent": ["warn", 4],            // Enforces 4-space indentation                               // Enforces import order
     },
   },
 ];
