@@ -54,10 +54,6 @@ jobs:
         run: |
           docker-compose exec -T shop-api sh -c "if [ -f shop-api.test.js ]; then npx vitest run shop-api.test.js; else echo 'Test file not found'; fi"
 
-      - name: Tear down services
-        run: |
-          docker-compose down
-
       - name: Set up SonarQube Scanner
         run: |
           wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
@@ -84,6 +80,9 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
+      - name: Tear down services
+        run: |
+          docker-compose down       
       
 
   deploy:
