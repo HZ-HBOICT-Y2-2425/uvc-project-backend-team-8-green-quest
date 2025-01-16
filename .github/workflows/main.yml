@@ -38,6 +38,15 @@ jobs:
         run: |
           docker-compose up -d
 
+      - name: Wait for SonarQube to be ready
+        run: |
+          echo "Waiting for SonarQube to start..."
+          # Wait for SonarQube to be available
+          until curl -s http://localhost:9000/api/system/health | grep -q '"status":"OK"'; do
+            echo "Waiting for SonarQube to start..."
+            sleep 10
+          done
+
       - name: Run Microservice tests
         run: |
           docker-compose exec -T microservice sh -c "if [ -f apigateway.test.js ]; then npx vitest run apigateway.test.js; else echo 'Test file not found'; fi"
@@ -75,25 +84,7 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
+
       - name: Tear down services
         run: |
-          docker-compose down       
-      
-
-  deploy:
-    needs: build-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Deploy to Production
-        run: |
-          # Add your deployment steps here
-          echo "Deploying to production..."
-          # Example: Deploy to server or cloud
-          # curl -X POST -H "Authorization: Bearer ${{ secrets.PRODUCTION_API_KEY }}" https://your-deploy-endpoint.com
-
+          docker-compose down
