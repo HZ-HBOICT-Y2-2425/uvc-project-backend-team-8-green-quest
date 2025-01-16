@@ -71,11 +71,12 @@ jobs:
       - name: Run SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner \
             -Dsonar.projectKey=YourProjectKey \
             -Dsonar.sources=. \
-            -Dsonar.host.url=https://your-sonarqube-server \
+            -Dsonar.host.url=https://my-sonarqube-server.com \
             -Dsonar.login=$SONAR_TOKEN
 
   deploy:
