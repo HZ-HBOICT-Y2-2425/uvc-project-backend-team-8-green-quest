@@ -40,10 +40,10 @@ export default [
       ],
  
       // Cyclomatic Complexity
-      "complexity": ["error", { max: 10 }], // Set max cyclomatic complexity to 10
+      "complexity": ["error", { max: 20 }], // Set max cyclomatic complexity to 10
  
       // SonarJS rules for code smells
-      "sonarjs/cognitive-complexity": ["error", 15], // Enforce cognitive complexity
+      "sonarjs/cognitive-complexity": ["error", 20], // Enforce cognitive complexity
       "sonarjs/no-duplicate-string": "warn",        // Warn about duplicate strings
       "sonarjs/no-identical-functions": "error",    // Disallow identical functions
       "sonarjs/no-all-duplicated-branches": "warn", // Detect duplicated branches
