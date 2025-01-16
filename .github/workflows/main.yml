@@ -56,23 +56,23 @@ jobs:
 
       - name: Tear down services
         run: |
-          docker-compose down
+          docker-compose down"
 
       - name: Set up SonarQube Scanner
         run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
-          unzip sonar-scanner-cli-4.7.0.2747-linux.zip
-          export PATH=$PATH:$(pwd)/sonar-scanner-4.7.0.2747-linux/bin
-
+            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+            unzip sonar-scanner-cli-4.7.0.2747-linux.zip
+            echo "$(pwd)/sonar-scanner-4.7.0.2747-linux/bin" >> $GITHUB_PATH
+        
       - name: Run SonarQube Analysis
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner \
-            -Dsonar.projectKey=YourProjectKey \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://your-sonarqube-server \
-            -Dsonar.login=$SONAR_TOKEN
+            sonar-scanner \
+              -Dsonar.projectKey=YourProjectKey \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=https://your-sonarqube-server \
+              -Dsonar.login=$SONAR_TOKEN
 
   deploy:
     needs: build-test
