@@ -59,6 +59,12 @@ jobs:
         run: |
           docker-compose exec -T shop-api sh -c "if [ -f shop-api.test.js ]; then npx vitest run shop-api.test.js; else echo 'Test file not found'; fi"
 
+     # Step 7: Notify failure
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "Build failed!"
+
       - name: Tear down services
         run: |
           docker-compose down
