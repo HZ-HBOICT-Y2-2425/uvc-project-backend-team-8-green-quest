@@ -7,8 +7,8 @@ export default defineConfig({
       provider: 'v8',  // Use V8 for coverage collection (you can also use 'c8')
       reporter: ['text', 'html'],  // Report coverage in text and HTML format
       all: true,  // Ensure all files are included, even those not directly tested
-      include: ['src/**/*.js'],  // Specify which source files to include in coverage
-      exclude: ['**/node_modules/**', '**/test/**'],  // Exclude certain files
+      include: ['test/alltests/**/*.test.js'],  // Specify which source files to include in coverage
+      exclude: ['**/node_modules/**'],  // Exclude certain files
       thresholds: {  // Set coverage thresholds (optional)
         global: {
           branches: 80,

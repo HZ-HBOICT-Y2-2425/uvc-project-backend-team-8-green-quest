@@ -44,15 +44,15 @@ jobs:
   
       - name: Run API gateway tests
         run: |
-          docker-compose exec -T apigateway npx vitest apigateway.test.js
+          docker-compose exec -T apigateway npx vitest test/alltests/apigateway.test.js
   
       - name: Run challenges-api tests
         run: |
-          docker-compose exec -T challenges-api npx vitest challenges-api.test.js
+          docker-compose exec -T challenges-api npx vitest test/alltests/challenges-api.test.js
   
       - name: Run shop-api tests
         run: |
-          docker-compose exec -T shop-api npx vitest shop-api.test.js
+          docker-compose exec -T shop-api npx vitest test/alltests/shop-api.test.js
 
       - name: Notify failure
         if: failure()
