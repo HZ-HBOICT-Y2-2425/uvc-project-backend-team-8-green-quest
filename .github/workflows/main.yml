@@ -41,20 +41,18 @@ jobs:
       - name: Start services for testing
         run: |
           docker-compose up -d
-
-      - name: Run Tests for All Services
+  
+      - name: Run API gateway tests
         run: |
-          services=("apigateway" "challenges-api" "shop-api")
-          for service in "${services[@]}"; do
-            test_file="test/alltests/${service}.test.js"
-            docker-compose exec -T "$service" sh -c "
-              npm install &&
-              if [ -f /usr/src/app/$test_file ]; then
-                npx vitest $test_file;
-              else
-                echo 'Test file $test_file not found';
-              fi"
-          done
+          docker-compose exec apigateway npx vitest apigateway.test.js
+  
+      - name: Run challenges-api tests
+        run: |
+          docker-compose exec challenges-api npx vitest challenges-api.test.js
+  
+      - name: Run shop-api tests
+        run: |
+          docker-compose exec shop-api npx vitest shop-api.test.js
 
       - name: Notify failure
         if: failure()
