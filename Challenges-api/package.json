@@ -16,6 +16,8 @@
   },
   "type": "module",
   "devDependencies": {
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "nock": "^13.0.0",
+    "vitest": "^3.0.3"
   }
 }
