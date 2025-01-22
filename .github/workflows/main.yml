@@ -44,9 +44,7 @@ jobs:
   
       - name: Run API gateway tests
         run: |
-          docker-compose exec -T apigateway sh -c "
-          npm ci &&
-          npx vitest test/alltests/apigateway.test.js"
+          docker-compose exec -T apigateway npx vitest apigateway.test.js
   
       - name: Run challenges-api tests
         run: |
