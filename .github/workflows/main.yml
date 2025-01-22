@@ -45,19 +45,19 @@ jobs:
 
       - name: Run Microservice tests
         run: |
-          docker-compose exec -T microservice sh -c "if [ -f test/alltests/apigateway.test.js ]; then npx vitest run apigateway.test.js; else echo 'Test file not found'; fi"
+          docker-compose exec -T microservice sh -c "if [ -f test/alltests/apigateway.test.js ]; then npx vitest apigateway.test.js; else echo 'Test file not found'; fi"
 
       - name: Run API Gateway tests
         run: |
-          docker-compose exec -T apigateway sh -c "if [ -f test/alltests/challenges-api.test.js ]; then npx vitest run challenges-api.test.js; else echo 'Test file not found'; fi"
+          docker-compose exec -T apigateway sh -c "if [ -f test/alltests/challenges-api.test.js ]; then npx vitest challenges-api.test.js; else echo 'Test file not found'; fi"
 
       - name: Run Challenges API tests
         run: |
-          docker-compose exec -T challenges-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest run shop-api.test.js; else echo 'Test file not found'; fi"
+          docker-compose exec -T challenges-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest shop-api.test.js; else echo 'Test file not found'; fi"
 
       - name: Run Shop API tests
         run: |
-          docker-compose exec -T shop-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest run shop-api.test.js; else echo 'Test file not found'; fi"
+          docker-compose exec -T shop-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest shop-api.test.js; else echo 'Test file not found'; fi"
 
      # Step 7: Notify failure
       - name: Notify failure
