@@ -4,6 +4,7 @@ services:
     build: ./microservice
     volumes:
       - ./microservice/code:/usr/src/app
+      - ./test:/app/test
     networks:
       - msexample
     ports:

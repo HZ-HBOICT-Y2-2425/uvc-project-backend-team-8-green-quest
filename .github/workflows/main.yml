@@ -25,7 +25,6 @@ jobs:
       - name: Run Tests with Coverage
         run: |
           npm run test:coverage
-  
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -43,23 +42,14 @@ jobs:
         run: |
           docker-compose up -d
 
-      - name: Run Microservice tests
+      - name: Run Tests for All Services
         run: |
-          docker-compose exec -T microservice sh -c "if [ -f test/alltests/apigateway.test.js ]; then npx vitest test/alltests/apigateway.test.js; else echo 'Test file not found'; fi"
+          services=("microservice" "apigateway" "challenges-api" "shop-api")
+          for service in "${services[@]}"; do
+            test_file="test/alltests/${service}.test.js"
+            docker-compose exec -T "$service" sh -c "if [ -f $test_file ]; then npx vitest $test_file; else echo 'Test file $test_file not found'; fi"
+          done
 
-      - name: Run API Gateway tests
-        run: |
-          docker-compose exec -T apigateway sh -c "if [ -f test/alltests/challenges-api.test.js ]; then npx vitest test/alltests/challenges-api.test.js; else echo 'Test file not found'; fi"
-
-      - name: Run Challenges API tests
-        run: |
-          docker-compose exec -T challenges-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest test/alltests/shop-api.test.js; else echo 'Test file not found'; fi"
-
-      - name: Run Shop API tests
-        run: |
-          docker-compose exec -T shop-api sh -c "if [ -f test/alltests/shop-api.test.js ]; then npx vitest test/alltests/shop-api.test.js; else echo 'Test file not found'; fi"
-
-     # Step 7: Notify failure
       - name: Notify failure
         if: failure()
         run: |
