@@ -22,7 +22,7 @@ services:
 
   apigateway:
     container_name: apigateway
-    build: ./apigateway
+    build: ./apigateway/code
     volumes:
       - ./apigateway/code:/usr/src/app
       - ./test:/usr/src/app/test 
