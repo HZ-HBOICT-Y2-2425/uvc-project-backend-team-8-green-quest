@@ -25,6 +25,7 @@ services:
     build: ./apigateway
     volumes:
       - ./apigateway/code:/usr/src/app
+      - ./test:/usr/src/app/test
     networks:
       - msexample
     ports:
@@ -46,6 +47,7 @@ services:
     volumes:
       - ./Challenges-api:/usr/src/app
       - ./database:/usr/src/app/database
+      - ./test:/usr/src/app/test
     networks:
       - msexample
     ports:
@@ -67,6 +69,7 @@ services:
     volumes:
       - ./shop-api:/usr/src/app
       - ./database:/usr/src/app/database
+      - ./test:/usr/src/app/test
     networks:
       - msexample
     ports:

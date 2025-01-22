@@ -44,10 +44,10 @@ jobs:
 
       - name: Run Tests for All Services
         run: |
-          services=("microservice" "apigateway" "challenges-api" "shop-api")
+          services=("apigateway" "challenges-api" "shop-api")
           for service in "${services[@]}"; do
             test_file="test/alltests/${service}.test.js"
-            docker-compose exec -T "$service" sh -c "if [ -f $test_file ]; then npx vitest $test_file; else echo 'Test file $test_file not found'; fi"
+            docker-compose exec -T "$service" sh -c "if [ -f /usr/src/app/$test_file ]; then npx vitest $test_file; else echo 'Test file $test_file not found'; fi"
           done
 
       - name: Notify failure
