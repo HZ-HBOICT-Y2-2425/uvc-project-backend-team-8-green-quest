@@ -14,5 +14,8 @@
     "express": "^4.21.1",
     "mysql2": "^3.11.5"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "supertest": "^7.0.0"
+  }
 }

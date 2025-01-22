@@ -47,7 +47,13 @@ jobs:
           services=("apigateway" "challenges-api" "shop-api")
           for service in "${services[@]}"; do
             test_file="test/alltests/${service}.test.js"
-            docker-compose exec -T "$service" sh -c "if [ -f /usr/src/app/$test_file ]; then npx vitest $test_file; else echo 'Test file $test_file not found'; fi"
+            docker-compose exec -T "$service" sh -c "
+              npm install &&
+              if [ -f /usr/src/app/$test_file ]; then
+                npx vitest $test_file;
+              else
+                echo 'Test file $test_file not found';
+              fi"
           done
 
       - name: Notify failure
@@ -58,3 +64,4 @@ jobs:
       - name: Tear down services
         run: |
           docker-compose down
+
