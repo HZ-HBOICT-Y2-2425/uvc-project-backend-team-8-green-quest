@@ -3,9 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: [
-      './test/alltests/ApigatewayDocker.test.js',
-      './test/alltests/Challenges-api.test.js',
-      './test/alltests/Shop-api.test.js',
+      './test/alltests/Apigateway.test.js',
     ], 
     exclude: [
       '**/node_modules/**'
