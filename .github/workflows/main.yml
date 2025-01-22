@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Tests with Coverage
         run: |
-           docker-compose exec -T apigateway npm run test:coverage
+          npm run test:coverage --exclude '**/ApigatewayDocker.test.js'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2

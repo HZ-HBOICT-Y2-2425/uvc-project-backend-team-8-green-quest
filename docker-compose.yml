@@ -26,6 +26,7 @@ services:
     volumes:
       - ./apigateway/code:/usr/src/app
       - ./test:/usr/src/app/test 
+      - ./vitest.config.js:/usr/src/app/apigateway/code/vitest.config.js
     networks:
       - msexample
     ports:
