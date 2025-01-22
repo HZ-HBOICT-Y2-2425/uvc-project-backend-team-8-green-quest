@@ -3,16 +3,7 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-COPY code/package*.json ./code/
-
-WORKDIR /usr/src/app/code
-
+COPY code/package.json ./
 RUN npm install
 
-WORKDIR /usr/src/app
-
-COPY code .
-
-WORKDIR /usr/src/app/code
-
-CMD ["npm", "run", "dev"]
+COPY . .

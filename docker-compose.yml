@@ -24,8 +24,7 @@ services:
     container_name: apigateway
     build: ./apigateway
     volumes:
-      - ./apigateway/code:/usr/src/app
-      - ./test:/usr/src/app/test
+    - ./apigateway:/usr/src/app
     networks:
       - msexample
     ports:
