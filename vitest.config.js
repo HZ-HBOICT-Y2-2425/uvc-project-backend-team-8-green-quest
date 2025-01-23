@@ -12,10 +12,10 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text', 'json', 'html'],
       all: true,
-      include: ['src/**/*.js'],
-      exclude: ['**/node_modules/**', '**/ApigatewayDocker.test.js'],
+      include: ['src/**/*.{js,ts}'],
+      exclude: ['**/node_modules/**'],
       thresholds: {
         global: {
           branches: 80,
