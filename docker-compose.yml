@@ -49,7 +49,7 @@ services:
       - ./Challenges-api:/usr/src/app
       - ./database:/usr/src/app/database
       - ./test:/usr/src/app/test
-      - ./vitest.config.js:/usr/src/app/Challenges-api/code/vitest.config.js
+      - ./vitest.config.js:/usr/src/app/Challenges-api/vitest.config.js
     networks:
       - msexample
     ports:
@@ -73,6 +73,7 @@ services:
       - ./shop-api:/usr/src/app
       - ./database:/usr/src/app/database
       - ./test:/usr/src/app/test
+      - ./vitest.config.js:/usr/src/app/shop-api/vitest.config.js
     networks:
       - msexample
     ports:

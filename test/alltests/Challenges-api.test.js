@@ -41,7 +41,7 @@ describe('executeSqlFile', () => {
     it('should throw an error if file not found', async () => {
         fs.readFile.mockRejectedValueOnce(new Error('File not found'));
 
-        await expect(executeSqlFile('../../usr/src/app/database/database.sql')).rejects.toThrow('File not found'); // Adjusted path with `../`
+        await expect(executeSqlFile('/usr/src/app/database/database.sql')).rejects.toThrow('File not found'); // Adjusted path with `../`
     });
 
     it('should throw an error if query fails', async () => {

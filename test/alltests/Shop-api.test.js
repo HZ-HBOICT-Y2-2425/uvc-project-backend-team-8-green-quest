@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { executeSqlFile, getAllItems, seedDatabase } from '../../shop-api/controller/itemController.js';
+import { executeSqlFile, getAllItems, seedDatabase } from '/usr/src/app/controller/itemController.js';
 import db from '/usr/src/app/db.js';
 import fs from 'fs/promises';
 import path from 'path';
 
 // Mock the db module
-vi.mock('../../shop-api/db.js', () => ({
+vi.mock('/usr/src/app/db.js', () => ({
     default: {
         query: vi.fn(), // Mock the `query` method
     },
@@ -21,7 +21,7 @@ describe('executeSqlFile', () => {
         `.trim(); // Trim leading and trailing whitespace
         
         const mockFileName = 'seed-shop.sql';
-        const mockFilePath = path.join(__dirname, '../../shop-api/database/seed-shop.sql'); // Correct path used by the code
+        const mockFilePath = path.resolve(__dirname, '/usr/src/app/database', mockFileName); // Correct path used by the code
         
         // Mock fs and db behavior
         fs.readFile.mockResolvedValueOnce(mockSQL);
@@ -39,7 +39,7 @@ describe('executeSqlFile', () => {
     it('should throw an error if file not found', async () => {
         fs.readFile.mockRejectedValueOnce(new Error('File not found'));
 
-        await expect(executeSqlFile('../../database/database.sql')).rejects.toThrow('File not found');  // Adjusted path with `../`
+        await expect(executeSqlFile('/usr/src/app/database/database.sql')).rejects.toThrow('File not found');  // Adjusted path with `../`
     });
 
     it('should throw an error if query fails', async () => {
@@ -127,12 +127,14 @@ describe('getAllItems', () => {
 describe('seedDatabase', () => {
     it('should seed the database successfully', async () => {
         const mockSQL = 'INSERT INTO Items (id, name) VALUES (1, "Item 1");';
+        const mockFilePath = path.resolve('/usr/src/app/database/seed-shop.sql');
+
         fs.readFile.mockResolvedValueOnce(mockSQL);
-        db.query.mockResolvedValueOnce([{ rows: [] }]);
+        db.query.mockResolvedValue({});
 
         await seedDatabase();
 
-        expect(fs.readFile).toHaveBeenCalledWith(path.join(__dirname, '../../shop-api/database/seed-shop.sql'), 'utf-8');  // Adjusted path with `../`
+        expect(fs.readFile).toHaveBeenCalledWith(mockFilePath, 'utf-8');
         expect(db.query).toHaveBeenCalledWith('INSERT INTO Items (id, name) VALUES (1, "Item 1")');
     });
 

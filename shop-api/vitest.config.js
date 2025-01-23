@@ -7,8 +7,7 @@ export default defineConfig({
     outputTruncateLength: 0,
     reporters: ['default'],
     include: [
-      './test/alltests/Apigateway.test.js',
-      './test/alltests/Challenges-api.test.js'
+      './test/alltests/Shop-api.test.js'
     ], 
     exclude: [
       '**/node_modules/**'
@@ -18,7 +17,7 @@ export default defineConfig({
       reporter: ['text', 'html'],
       all: true,
       include: ['src/**/*.js'],
-      exclude: ['**/node_modules/**', '**/Apigateway.test.js'],
+      exclude: ['**/node_modules/**'],
       thresholds: {
         global: {
           branches: 80,

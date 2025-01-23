@@ -2,6 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    silent: true,
+    clearMocks: true,
+    outputTruncateLength: 0,
+    reporters: ['default'],
     include: [
       './test/alltests/Challenges-api.test.js',
     ], 
