@@ -49,12 +49,13 @@ services:
       - ./Challenges-api:/usr/src/app
       - ./database:/usr/src/app/database
       - ./test:/usr/src/app/test
+      - ./vitest.config.js:/usr/src/app/Challenges-api/code/vitest.config.js
     networks:
       - msexample
     ports:
       - "3012:3012"
     working_dir: /usr/src/app
-    command: bash -c "npm install && npm run start:dev"
+    command: bash -c "npm install && node start.js shop"
     environment:
       NODE_ENV: test
       DB_HOST: mysql

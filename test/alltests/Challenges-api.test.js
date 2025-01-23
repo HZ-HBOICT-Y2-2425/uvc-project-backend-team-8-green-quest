@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 // Mock the db module
-vi.mock('../../Challenges-api/db.js', () => ({
+vi.mock('/usr/src/app/db.js', () => ({
     default: {
         query: vi.fn(), // Mock the `query` method
     },
@@ -20,7 +20,7 @@ describe('executeSqlFile', () => {
         `;
     
         const mockFileName = 'seed-challenges.sql';
-        const mockFilePath = path.resolve(__dirname, '../../Challenges-api/database/seed-challenges.sql'); // Added `../` to the path
+        const mockFilePath = path.resolve(__dirname, '/usr/src/app/database/seed-challenges.sql'); // Added `../` to the path
     
         // Mock fs and db behavior
         fs.readFile.mockResolvedValueOnce(mockSQL); // Mock the content of the SQL file
@@ -41,7 +41,7 @@ describe('executeSqlFile', () => {
     it('should throw an error if file not found', async () => {
         fs.readFile.mockRejectedValueOnce(new Error('File not found'));
 
-        await expect(executeSqlFile('../../database/database.sql')).rejects.toThrow('File not found'); // Adjusted path with `../`
+        await expect(executeSqlFile('../../usr/src/app/database/database.sql')).rejects.toThrow('File not found'); // Adjusted path with `../`
     });
 
     it('should throw an error if query fails', async () => {
@@ -101,7 +101,7 @@ describe('seedDatabase', () => {
         db.query.mockResolvedValueOnce({ rows: [] });
     
         // Adjusted mockFilePath to match actual resolution
-        const mockFilePath = path.resolve(__dirname, '../../Challenges-api/database/seed-challenges.sql'); // Correct the path
+        const mockFilePath = path.resolve(__dirname, '/usr/src/app/database/seed-challenges.sql'); // Correct the path
     
         await seedDatabase();
     

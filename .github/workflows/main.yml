@@ -48,7 +48,7 @@ jobs:
         continue-on-error: false
       - name: Run challenges-api tests
         run: |
-          docker-compose exec -T challenges-api npx vitest test/alltests/challenges-api.test.js
+          docker compose exec -T challenges-api npx vitest run test/alltests/Challenges-api.test.js
   
       - name: Run shop-api tests
         run: |

@@ -3,8 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: [
-      './test/alltests/Apigateway.test.js',
-      './test/alltests/Challenges-api.test.js'
+      './test/alltests/Challenges-api.test.js',
     ], 
     exclude: [
       '**/node_modules/**'
@@ -14,7 +13,7 @@ export default defineConfig({
       reporter: ['text', 'html'],
       all: true,
       include: ['src/**/*.js'],
-      exclude: ['**/node_modules/**', '**/Apigateway.test.js'],
+      exclude: ['**/node_modules/**', '**/ApigatewayDocker.test.js'],
       thresholds: {
         global: {
           branches: 80,
